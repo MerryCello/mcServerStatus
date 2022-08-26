@@ -73,7 +73,8 @@ const refreshServerTableRow = async (address) => {
 
 const loadServersStatus = () => {
   let servers = [
-    "worldswithoutend.us.to"
+    "worldswithoutend.us.to",
+    "150.136.85.86"
   ]
 
   servers.sort((a,b)=>a>b)
