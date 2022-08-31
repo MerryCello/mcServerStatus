@@ -1,0 +1,15 @@
+{
+  "short_name": "Server Status",
+  "name": "Minecraft Server Status",
+  "icons": [
+    {
+      "src": "cube-minecraft-block.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#000000"
+}

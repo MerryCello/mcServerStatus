@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@font-face {
+  font-family: "Minecraft";
+  src: local("Minecraft"),
+    url("./fonts/Minecraftia.ttf") format("truetype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Minecraft-bold";
+  src: local("Minecraft-bold"),
+    url("./fonts/Minecrafter_3.ttf") format("truetype");
+  font-weight: bold;
+}
