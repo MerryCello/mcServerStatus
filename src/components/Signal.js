@@ -5,7 +5,7 @@ import bar3 from "../images/3-5_Signal.png"
 import bar4 from "../images/4-5_Signal.png"
 import fullSignal from "../images/fullSignal.png"
 import noSignal from "../images/noSignal.png"
-import searchingSignal from "../images/searchingSignal.png"
+import searchingSignal from "../images/searchingSignal.gif"
 
 
 const Signal = ({serverStatus, size, style}) => {
