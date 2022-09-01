@@ -38,10 +38,12 @@ const ServerCard = ({server, status, style, onClick, tabIndex}) => {
                </div>
             </div>
             <div className="text-left">
-               <p className="m-0" style={status.online ? {color: "#7e7e7e"} : {color: "red"}}>{
+               <p className="m-0" style={status.online && !status.loading ? {color: "#7e7e7e"} : {color: "red"}}>{
                   status.online && motd
                      ? parse(motd?.html?.map((strHtml) => `<span key={${i++}}>${strHtml}</span>`).join("<br/>"))
-                     : "Can't connect to server"
+                     : status.loading 
+                        ? ""
+                        : "Can't connect to server"
                }</p>
             </div>
          </div>
