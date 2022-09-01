@@ -31,7 +31,7 @@ const ServerCard = ({server, status, style, onClick, tabIndex}) => {
                   <span>{serverSt}</span>
                   <span className="card-srv-name-status">
                      {status.online &&
-                     <span className="pr-2" style={{color: "#7e7e7e"}}>{status?.players ? (playersOnline + "/" + maxPlayers) : "-/-"}</span>
+                     <span className="pr-2" style={{color: "#7e7e7e"}} title={status?.players?.list && status.players.list.join("\n")}>{status?.players ? (playersOnline + "/" + maxPlayers) : "-/-"}</span>
                      }
                      <Signal serverStatus={status} size={1} style={{paddingBottom: 5}} />
                   </span>
