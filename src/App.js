@@ -32,12 +32,12 @@ function App() {
   useEffect(() => {
     editRef.current.disabled = true;
     deleteRef.current.disabled = true;
-    getServerStatuses();
+    // updateServerStatuses();
   }, []);
 
-  const getServerStatuses = async () => {
+  const updateServerStatuses = async () => {
     let updatedServers = {};
-    for (const [server, status] of Object.entries(servers)) {
+    for (const [server] of Object.entries(servers)) {
       let updatedStatus = (await request.get("https://api.mcsrvstat.us/2/" + server))?.body
       updatedServers[server] = updatedStatus;
     }
@@ -70,7 +70,7 @@ function App() {
       }
     }
     setServers(serversRst);
-    getServerStatuses();
+    updateServerStatuses();
   }
 
   return (
