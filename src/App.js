@@ -41,7 +41,7 @@ function App() {
   useEffect(() => {
     editRef.current.disabled = true;
     deleteRef.current.disabled = true;
-    // updateServerStatuses();
+    updateServerStatuses();
   }, []);
 
   const updateServerStatuses = async () => {
