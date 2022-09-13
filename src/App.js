@@ -23,13 +23,14 @@ function App() {
     // Worlds without end
     "worldswithoutend.us.to": loadingObj,
     // Bros final world (as hosted by shinjamodo)
-    "144.24.48.219": loadingObj,
+    "mcbrosworld.us.to": loadingObj,
     // Bed wars
     "herobrine.org": loadingObj,
     // MC Middle Earth
     "build.mcmiddleearth.com": loadingObj,
     // Bros final world (as hosted by Josh)
     "132.145.162.245": loadingObj,
+    "mcbrosworld.us.to": loadingObj,
     // TODO: really gotta add a way to add server name
     // TODO: also build ADD, EDIT, and DELETE functionalities
   })
