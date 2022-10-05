@@ -60,11 +60,13 @@ function App() {
   const updateServerStatuses = async () => {
     let updatedServers = [];
     for (const server of servers) {
-      let updatedServer = server;
-      updatedServer.status = (
-        await request.get("https://api.mcsrvstat.us/2/" + server.address)
-      )?.body;
-      updatedServers.push(updatedServer);
+      updatedServers.push({
+        ...server,
+        status: (
+          await request.get("https://api.mcsrvstat.us/2/" + server.address)
+        )?.body,
+      });
+      console.log(updatedServers[updatedServers.length - 1].status);
     }
     setServers(updatedServers);
   };
@@ -72,16 +74,16 @@ function App() {
   const renderServerCards = () => {
     let cards = [];
     let i = 0;
-    for (const server of servers) {
+    for (const { name, address, status } of servers) {
       cards.push(
         <ServerCard
           onClick={serverCardSelect}
           key={Math.random()}
           tabIndex={i++}
           style={{ marginBottom: "8px" }}
-          name={server.name}
-          address={server.address}
-          status={server.status}
+          name={name}
+          address={address}
+          status={status}
         />
       );
     }
@@ -99,13 +101,12 @@ function App() {
     );
   };
   const refreshServers = () => {
-    let serversRst = {};
+    let serversRst = [];
     for (const server of servers) {
-      serversRst = server;
-      serversRst.status = {
-        ...loadingObj,
-        icon: server.status?.icon,
-      };
+      serversRst.push({
+        ...server,
+        status: { ...loadingObj, icon: server.status?.icon },
+      });
     }
     setServers(serversRst);
     updateServerStatuses();

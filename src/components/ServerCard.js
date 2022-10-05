@@ -33,7 +33,7 @@ const ServerCard = ({ name, address, status, style, onClick, tabIndex }) => {
           <div className="card-srv-name-status">
             <span title={address}>{name}</span>
             <span className="card-srv-name-status">
-              {status.online && (
+              {status?.online && (
                 <span
                   className="pr-2 players-online"
                   style={{ color: "#7e7e7e" }}
@@ -60,18 +60,18 @@ const ServerCard = ({ name, address, status, style, onClick, tabIndex }) => {
           <p
             className="m-0"
             style={
-              status.online && !status.loading
+              status?.online && !status?.loading
                 ? { color: "#7e7e7e" }
                 : { color: "red" }
             }
           >
-            {status.online && motd
+            {status?.online && motd
               ? parse(
                   motd?.html
                     ?.map((strHtml) => `<span key={${i++}}>${strHtml}</span>`)
                     .join("<br/>")
                 )
-              : status.loading
+              : status?.loading
               ? ""
               : "Can't connect to server"}
           </p>
