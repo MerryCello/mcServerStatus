@@ -28,12 +28,7 @@ const ServerCard = ({ server, status, style, onClick, tabIndex }) => {
       tabIndex={tabIndex}
     >
       <div className="card-icon">
-        <img
-          src={icon ? icon : serverDefaultIcon}
-          className=""
-          style={{ height: "6rem", width: "auto", paddingRight: "8px" }}
-          alt="icon for server"
-        />
+        <img src={icon ? icon : serverDefaultIcon} alt="icon for server" />
       </div>
       <div className="server-details">
         <div className="text-left">

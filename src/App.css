@@ -82,6 +82,12 @@ div.card-grid:focus {
   width: fit-content;
 }
 
+.card-icon>img {
+  height: 6rem;
+  width: auto;
+  padding-right: 8px;
+}
+
 .server-details {
   display: flex;
   flex-direction: column;
@@ -176,5 +182,16 @@ span.card-srv-name-status {
   }
   body, h1 {
     font-size: 1.25rem;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  body {
+    font-size: .75rem;
+  }
+  .card-icon>img {
+    width: 15vw;
+    height: auto;
+    padding-right: 8px;
   }
 }
