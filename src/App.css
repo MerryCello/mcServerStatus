@@ -189,9 +189,15 @@ span.card-srv-name-status {
   body {
     font-size: .75rem;
   }
+  button {
+    font-size: 1rem;
+  }
   .card-icon>img {
     width: 15vw;
     height: auto;
     padding-right: 8px;
+  }
+  .card-srv-name-status {
+    line-height: 1rem !important;
   }
 }

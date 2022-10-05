@@ -3,16 +3,14 @@ import parse from "html-react-parser";
 import Signal from "./Signal";
 import serverDefaultIcon from "../images/serverDefaultIcon.png";
 
-const ServerCard = ({ server, status, style, onClick, tabIndex }) => {
+const ServerCard = ({ name, address, status, style, onClick, tabIndex }) => {
   const [icon, setIcon] = useState(status?.icon);
-  const [serverSt, setServer] = useState(status?.address);
   const [motd, setMotd] = useState(status?.motd);
   const [playersOnline, setPlayersOnline] = useState(status?.playersOnline);
   const [maxPlayers, setMaxPlayers] = useState(status?.maxPlayers);
 
   useEffect(() => {
     setIcon(status?.icon);
-    setServer(server);
     setMotd(status?.motd);
     setPlayersOnline(status?.players?.online);
     setMaxPlayers(status?.players?.max);
@@ -33,7 +31,7 @@ const ServerCard = ({ server, status, style, onClick, tabIndex }) => {
       <div className="server-details">
         <div className="text-left">
           <div className="card-srv-name-status">
-            <span>{serverSt}</span>
+            <span title={address}>{name}</span>
             <span className="card-srv-name-status">
               {status.online && (
                 <span
@@ -48,7 +46,7 @@ const ServerCard = ({ server, status, style, onClick, tabIndex }) => {
               )}
               <Signal
                 server={{
-                  hostname: server,
+                  hostname: address,
                   online: status?.online,
                   loading: status?.loading,
                 }}
