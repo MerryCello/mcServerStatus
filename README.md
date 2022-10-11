@@ -2,7 +2,9 @@
 A place to get the status of a minecraft server(s)
 
 ## Deploy
-`git push heroku master`
+`git push heroku master`\
+OR\
+`npm run deploy`
 
 <!-- # Getting Started with Create React App
 
