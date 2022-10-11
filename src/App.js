@@ -52,10 +52,14 @@ function App() {
   const refreshRef = useRef(null);
 
   useEffect(() => {
-    editRef.current.disabled = true;
-    deleteRef.current.disabled = true;
+    disableServerButtons();
     updateServerStatuses();
   }, []);
+
+  const disableServerButtons = () => {
+    editRef.current.disabled = true;
+    deleteRef.current.disabled = true;
+  };
 
   const updateServerStatuses = async () => {
     let updatedServers = [];
@@ -77,6 +81,7 @@ function App() {
     for (const { name, address, status } of servers) {
       cards.push(
         <ServerCard
+          onBlur={disableServerButtons}
           onClick={serverCardSelect}
           key={Math.random()}
           tabIndex={i++}

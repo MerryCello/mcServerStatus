@@ -3,7 +3,15 @@ import parse from "html-react-parser";
 import Signal from "./Signal";
 import serverDefaultIcon from "../images/serverDefaultIcon.png";
 
-const ServerCard = ({ name, address, status, style, onClick, tabIndex }) => {
+const ServerCard = ({
+  name,
+  address,
+  status,
+  style,
+  onBlur,
+  onClick,
+  tabIndex,
+}) => {
   const [icon, setIcon] = useState(status?.icon);
   const [motd, setMotd] = useState(status?.motd);
   const [playersOnline, setPlayersOnline] = useState(status?.playersOnline);
@@ -22,6 +30,7 @@ const ServerCard = ({ name, address, status, style, onClick, tabIndex }) => {
     <div
       className="card-grid"
       style={style}
+      onBlur={onBlur}
       onClick={onClick}
       tabIndex={tabIndex}
     >
