@@ -258,6 +258,9 @@ input:focus {
   div.buttons.row {
     margin: 0 5vw 0 5vw;
   }
+  .button {
+    height: 52px;
+  }
   .options {
     display: grid;
     grid-template-columns: auto auto;
