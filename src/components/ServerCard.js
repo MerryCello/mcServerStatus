@@ -8,10 +8,13 @@ const ServerCard = ({
   address,
   status,
   style,
+  onFocus,
   onBlur,
   onClick,
   tabIndex,
+  index,
 }) => {
+  const [selected, setSelected] = useState(false);
   const [icon, setIcon] = useState(status?.icon);
   const [motd, setMotd] = useState(status?.motd);
   const [playersOnline, setPlayersOnline] = useState(status?.playersOnline);
@@ -24,14 +27,31 @@ const ServerCard = ({
     setMaxPlayers(status?.players?.max);
   }, [status]);
 
+  const cardOnClick = () => {
+    setSelected(true);
+    onClick(index);
+  };
+
+  const cardOnFocus = () => {
+    setSelected(true);
+    onFocus(index);
+  };
+
+  const cardOnBlur = (event) => {
+    setSelected(false);
+    onBlur(event);
+  };
+
   let i = 0;
   return (
-    // TODO: put inline styles in .css file
+    // TODO: put inline styles in CSS file
     <div
-      className="card-grid"
+      className={"card-grid" + (selected ? " card-selected" : "")}
       style={style}
-      onBlur={onBlur}
-      onClick={onClick}
+      onFocus={cardOnFocus}
+      onBlur={cardOnBlur}
+      // onFocus={cardOnClick}
+      onClick={cardOnClick}
       tabIndex={tabIndex}
     >
       <div className="card-icon">
@@ -50,7 +70,9 @@ const ServerCard = ({
                     status?.players?.list && status.players.list.join("\n")
                   }
                 >
-                  {status?.players ? playersOnline + "/" + maxPlayers : "-/-"}
+                  {status?.players
+                    ? (playersOnline ?? "") + "/" + (maxPlayers ?? "")
+                    : "-/-"}
                 </span>
               )}
               <Signal

@@ -1,13 +1,53 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import NotFound404 from "./pages/NotFound404";
+import EditServerPage from "./pages/EditServerPage";
+import DeleteServerPage from "./pages/DeleteServerPage";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+const router = createBrowserRouter([
+  {
+    path: "*",
+    element: <Navigate to="/mcServerStatus" replace />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: "/mcServerStatus",
+    element: <App />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: "/mcServerStatus/edit",
+    element: <EditServerPage />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: "/edit",
+    element: <Navigate to="/mcServerStatus/edit" replace />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: "/mcServerStatus/delete",
+    element: <DeleteServerPage />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: "/delete",
+    element: <Navigate to="/mcServerStatus/delete" replace />,
+    errorElement: <NotFound404 />,
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
