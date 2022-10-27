@@ -64,7 +64,11 @@ const ServerCard = ({
                   className="pr-2 players-online"
                   style={{ color: "#7e7e7e" }}
                   title={
-                    status?.players?.list && status.players.list.join("\n")
+                    status?.players?.list
+                      ? status.players.list.join("\n")
+                      : status?.players?.online
+                      ? "No players disclosed"
+                      : "No players online"
                   }
                 >
                   {status?.players
@@ -113,6 +117,8 @@ const ServerCard = ({
           <p className="player-list">
             {status?.players?.list
               ? status.players.list.join(", ")
+              : status?.players?.online
+              ? "No players disclosed"
               : "No players online"}
           </p>
         </>
