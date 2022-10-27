@@ -32,32 +32,6 @@ td {
   padding-bottom: 15px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -106,6 +80,12 @@ div.card-grid:focus,
 span.card-srv-name-status {
   justify-content: end;
   margin-left: 10px;
+}
+
+.player-list {
+  text-align: left;
+  font-style: italic;
+  color: #7e7e7e;
 }
 
 .servers-list {
@@ -251,6 +231,7 @@ input:focus {
   outline: 3px solid white;
 }
 
+/* TABLET WIDTH STYLES */
 @media only screen and (max-width: 1000px) {
   .servers-list,
   .delete-page-container,
@@ -272,6 +253,7 @@ input:focus {
   }
 }
 
+/* MOBILE WIDTH STYLES */
 @media only screen and (max-width: 500px) {
   body {
     font-size: 0.75rem;

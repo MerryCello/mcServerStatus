@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import parse from "html-react-parser";
 import Signal from "./Signal";
 import serverDefaultIcon from "../images/serverDefaultIcon.png";
+import { useWindowDimensions } from "../hooks";
 
 const ServerCard = ({
   name,
@@ -14,31 +15,27 @@ const ServerCard = ({
   tabIndex,
   index,
 }) => {
-  const [selected, setSelected] = useState(false);
-  const [icon, setIcon] = useState(status?.icon);
-  const [motd, setMotd] = useState(status?.motd);
-  const [playersOnline, setPlayersOnline] = useState(status?.playersOnline);
-  const [maxPlayers, setMaxPlayers] = useState(status?.maxPlayers);
+  const [isSelected, setIsSelected] = useState(false);
+  const icon = status?.icon;
+  const motd = status?.motd;
+  const playersOnline = status?.players?.online;
+  const maxPlayers = status?.players?.max;
 
-  useEffect(() => {
-    setIcon(status?.icon);
-    setMotd(status?.motd);
-    setPlayersOnline(status?.players?.online);
-    setMaxPlayers(status?.players?.max);
-  }, [status]);
+  const { width } = useWindowDimensions();
+  const isMobileOrTablet = width < 500;
 
   const cardOnClick = () => {
-    setSelected(true);
+    setIsSelected(true);
     onClick(index);
   };
 
   const cardOnFocus = () => {
-    setSelected(true);
+    setIsSelected(true);
     onFocus(index);
   };
 
   const cardOnBlur = (event) => {
-    setSelected(false);
+    setIsSelected(false);
     onBlur(event);
   };
 
@@ -46,7 +43,7 @@ const ServerCard = ({
   return (
     // TODO: put inline styles in CSS file
     <div
-      className={"card-grid" + (selected ? " card-selected" : "")}
+      className={"card-grid" + (isSelected ? " card-selected" : "")}
       style={style}
       onFocus={cardOnFocus}
       onBlur={cardOnBlur}
@@ -108,6 +105,18 @@ const ServerCard = ({
           </p>
         </div>
       </div>
+      {isMobileOrTablet && isSelected && (
+        <>
+          <p style={{ color: "#7e7e7e" }}>
+            {parse(status?.version?.replace(/ /gm, "<br/>").replace(/,/gm, ""))}
+          </p>
+          <p className="player-list">
+            {status?.players?.list
+              ? status.players.list.join(", ")
+              : "No players online"}
+          </p>
+        </>
+      )}
     </div>
   );
 };
