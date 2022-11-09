@@ -26,17 +26,23 @@ const ServerCard = ({
 
   const cardOnClick = () => {
     setIsSelected(true);
-    onClick(index);
+    if (onClick) {
+      onClick(index);
+    }
   };
 
   const cardOnFocus = () => {
     setIsSelected(true);
-    onFocus(index);
+    if (onFocus) {
+      onFocus(index);
+    }
   };
 
   const cardOnBlur = (event) => {
     setIsSelected(false);
-    onBlur(event);
+    if (onBlur) {
+      onBlur(event);
+    }
   };
 
   let i = 0;
