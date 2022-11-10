@@ -87,6 +87,7 @@ const ServerCard = ({
                   hostname: address,
                   online: status?.online,
                   loading: status?.loading,
+                  pingAvgMs: status?.pingAvgMs,
                 }}
                 size={1}
                 style={{ paddingBottom: 5 }}
