@@ -1,1 +1,1 @@
-export const isNil = (obj) => obj == null || obj == undefined;
+export const isNil = (obj) => obj === null || obj === undefined;

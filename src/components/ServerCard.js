@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import parse from "html-react-parser";
 import Signal from "./Signal";
 import serverDefaultIcon from "../images/serverDefaultIcon.png";
@@ -108,7 +108,7 @@ const ServerCard = ({
               ? parse(
                   motd?.html
                     ?.map((strHtml) => `<span key={${i++}}>${strHtml}</span>`)
-                    .join("<br/>")
+                    .join("<br/>") || ""
                 )
               : status?.loading
               ? ""
@@ -119,7 +119,9 @@ const ServerCard = ({
       {isMobileOrTablet && isSelected && (
         <>
           <p style={{ color: "#7e7e7e" }}>
-            {parse(status?.version?.replace(/ /gm, "<br/>").replace(/,/gm, ""))}
+            {parse(
+              status?.version?.replace(/ /gm, "<br/>").replace(/,/gm, "") || ""
+            )}
           </p>
           <p className="player-list">
             {status?.players?.list
