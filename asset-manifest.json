@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/mcServerStatus/static/css/main.7a110b1e.css",
-    "main.js": "/mcServerStatus/static/js/main.d0846113.js",
+    "main.js": "/mcServerStatus/static/js/main.4fa9f535.js",
     "static/js/787.1f6c4ae2.chunk.js": "/mcServerStatus/static/js/787.1f6c4ae2.chunk.js",
     "static/media/dirt_bg.png": "/mcServerStatus/static/media/dirt_bg.bab50787a49201270a00.png",
     "static/media/Minecraftia.ttf": "/mcServerStatus/static/media/Minecraftia.c2908c14b3726c200279.ttf",
@@ -11,11 +11,11 @@
     "static/media/Button_Plate.mp3": "/mcServerStatus/static/media/Button_Plate.03889576fcca3b2913fd.mp3",
     "index.html": "/mcServerStatus/index.html",
     "main.7a110b1e.css.map": "/mcServerStatus/static/css/main.7a110b1e.css.map",
-    "main.d0846113.js.map": "/mcServerStatus/static/js/main.d0846113.js.map",
+    "main.4fa9f535.js.map": "/mcServerStatus/static/js/main.4fa9f535.js.map",
     "787.1f6c4ae2.chunk.js.map": "/mcServerStatus/static/js/787.1f6c4ae2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7a110b1e.css",
-    "static/js/main.d0846113.js"
+    "static/js/main.4fa9f535.js"
   ]
 }
