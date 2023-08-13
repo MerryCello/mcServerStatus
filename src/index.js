@@ -34,6 +34,16 @@ const router = createBrowserRouter([
     errorElement: <NotFound404 />,
   },
   {
+    path: "/mcServerStatus/add",
+    element: <EditServerPage />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: "/add",
+    element: <Navigate to="/mcServerStatus/add" replace />,
+    errorElement: <NotFound404 />,
+  },
+  {
     path: "/mcServerStatus/delete",
     element: <DeleteServerPage />,
     errorElement: <NotFound404 />,

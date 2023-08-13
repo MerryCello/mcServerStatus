@@ -1,22 +1,23 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { deleteUserServer } from "../firebase/controlers";
 
 const DeleteServerPage = () => {
-  const { state } = useLocation();
+  const { state: routeParam } = useLocation();
+  const navigate = useNavigate();
 
   const deleteOnClick = () => {
-    // TODO: delete stuff
-    alert(
-      " ⚠⚠⚠⚠⚠⚠⚠⚠\n👷‍♂️ Hard hat required 🛠\n👷‍♂️ Construction zone 🛠\n ⚠⚠⚠⚠⚠⚠⚠⚠"
-    );
-    setTimeout(() => (window.location.href = "/"), 100); // 100ms for Button sound fx to play
+    deleteUserServer(routeParam?.id).then(navigateHome);
   };
+  const navigateHome = () => setTimeout(() => navigate("/mcServerStatus"), 100); // 100ms for Button sound fx to play
 
   return (
     <div className="main-container delete-page-container column">
       <p>Are you sure you want to remove this server?</p>
-      <p>{`\`${state?.name ?? ""}' will be lost forever! (A long time!)`}</p>
+      <p>{`\`${
+        routeParam?.name ?? ""
+      }' will be lost forever! (A long time!)`}</p>
       <div className="buttons row">
         <Button
           onClick={deleteOnClick}
@@ -24,7 +25,7 @@ const DeleteServerPage = () => {
         >
           Delete
         </Button>
-        <Button linkTo="/" style={{ flex: 1 }}>
+        <Button onClick={navigateHome} style={{ flex: 1 }}>
           Cancel
         </Button>
       </div>

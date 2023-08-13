@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { isNil } from "../utils";
+import { addUserServer, editUserServer } from "../firebase/controlers";
 
 const NAME_PLACEHOLDER = "Minecraft Server";
 
 const EditServerPage = () => {
-  const { state } = useLocation();
-  const [nameState, setNameState] = useState(state?.name ?? NAME_PLACEHOLDER);
-  const [addressState, setAddressState] = useState(state?.address ?? "");
+  const { state: routeParam } = useLocation();
+  const navigate = useNavigate();
+  const [nameState, setNameState] = useState(
+    routeParam?.name ?? NAME_PLACEHOLDER
+  );
+  const [addressState, setAddressState] = useState(routeParam?.address ?? "");
   const doneRef = useRef(null);
 
   useEffect(() => {
@@ -31,17 +35,27 @@ const EditServerPage = () => {
     if (nameState === "") setNameState(NAME_PLACEHOLDER);
   };
 
+  const navigateHome = () => setTimeout(() => navigate("/mcServerStatus"), 100); // 100ms for Button sound fx to play
+
   const doneOnClick = () => {
-    // no state means that a new server status entry is to be added
-    if (isNil(state)) {
-      // TODO: create server status entry
-    } else {
-      // TODO: save server status entry
+    // no routeParam means that a new server status entry is to be added
+    let resolution = Promise.resolve();
+    if (isNil(routeParam)) {
+      resolution = addUserServer({
+        address: addressState,
+        name: nameState,
+      });
+    } else if (
+      routeParam?.address !== addressState ||
+      routeParam?.name !== nameState
+    ) {
+      resolution = editUserServer({
+        id: routeParam?.id,
+        address: addressState,
+        name: nameState,
+      });
     }
-    alert(
-      " ⚠⚠⚠⚠⚠⚠⚠⚠\n👷‍♂️ Hard hat required 🛠\n👷‍♂️ Construction zone 🛠\n ⚠⚠⚠⚠⚠⚠⚠⚠"
-    );
-    setTimeout(() => (window.location.href = "/"), 100); // 100ms for Button sound fx to play
+    resolution.then(navigateHome);
   };
 
   return (
@@ -70,7 +84,7 @@ const EditServerPage = () => {
           <Button onClick={doneOnClick} tabIndex={3} ref={doneRef}>
             Done
           </Button>
-          <Button linkTo={"/"} tabIndex={4}>
+          <Button onClick={navigateHome} tabIndex={4}>
             Cancel
           </Button>
         </div>
