@@ -1,5 +1,5 @@
 import "../App.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import request from "superagent";
 import ServerCard from "../components/ServerCard";
 import Button from "../components/Button";
@@ -10,6 +10,7 @@ const EDIT = "Edit";
 const DELETE = "Delete";
 const ADD_SERVER = "Add Server";
 const REFRESH = "Refresh";
+const NO_SERVERS_LOADER_STATES = ["O o o", "o O o", "o o O", "o O o"];
 
 const LandingPage = () => {
   const [servers, setServers] = useState([]);
@@ -18,14 +19,22 @@ const LandingPage = () => {
   const deleteRef = useRef(null);
   const [editDisabled, setEditDisabled] = useState(true);
   const [deleteDisabled, setDeleteDisabled] = useState(true);
+  const [noServersLoaderIndex, setNoServersLoaderIndex] = useState(0);
   const addServerRef = useRef(null);
   const refreshRef = useRef(null);
 
   useEffect(() => {
+    const interval = setLoadingInterval();
     getUserServers().then((serversResponse) => {
-      setServers(serversResponse);
-      updateServersStatus(serversResponse);
+      const serversWithLoading = serversResponse.map((server) => ({
+        ...server,
+        status: loadingObj,
+      }));
+      setServers(serversWithLoading);
+      updateServersStatus(serversWithLoading);
     });
+
+    return () => clearInterval(interval);
   }, []);
 
   const serverCardSelect = (index) => {
@@ -92,27 +101,59 @@ const LandingPage = () => {
     }
   };
 
-  const renderServerCards = () => {
-    let cards = [];
-    let i = 0;
-    for (const { name, address, status } of servers) {
-      cards.push(
-        <ServerCard
-          onFocus={serverCardSelect}
-          onBlur={serverCardOnBlur}
-          key={i}
-          tabIndex={i + 1}
-          index={i}
-          style={{ marginBottom: "8px" }}
-          name={name}
-          address={address}
-          status={status}
-        />
-      );
-      i++;
-    }
-    return cards;
+  const setLoadingInterval = () => {
+    const interval = setInterval(() => {
+      if (servers.length === 0) {
+        // Have to use setState function to get the actual state of 'noServersLoader'
+        // because 'noServersLoader' variable will not show the actual value in the
+        // setInterval scope.
+        setNoServersLoaderIndex(
+          (prevState) => (prevState + 1) % NO_SERVERS_LOADER_STATES.length
+        );
+        // call set state just to get the actual state of 'servers'
+        setServers((prevState) => {
+          if (prevState.length !== 0) {
+            clearInterval(interval);
+          }
+          return prevState;
+        });
+      }
+    }, 300);
+    return interval;
   };
+
+  const renderLoadingState = () => (
+    <div title="(Doesn't actually scan)">
+      <h1 style={{ marginBottom: "0px", marginTop: "25px" }}>
+        {"Scanning for games on your local network"}
+      </h1>
+      <h1 style={{ color: "#7e7e7e", textShadow: "none" }}>
+        {NO_SERVERS_LOADER_STATES[noServersLoaderIndex]}
+      </h1>
+    </div>
+  );
+
+  const renderServerCards = () =>
+    servers.map(({ name, address, status }, i) => (
+      <ServerCard
+        onFocus={serverCardSelect}
+        onBlur={serverCardOnBlur}
+        key={i}
+        tabIndex={i + 1}
+        index={i}
+        style={{ marginBottom: "8px" }}
+        name={name}
+        address={address}
+        status={status}
+      />
+    ));
+
+  const serversList = useMemo(() => {
+    if (servers.length === 0) {
+      return renderLoadingState();
+    }
+    return renderServerCards();
+  }, [servers.length, noServersLoaderIndex]);
 
   const refreshServers = () => {
     let serversRst = [];
@@ -130,7 +171,7 @@ const LandingPage = () => {
     <div className="main-container landing-container">
       <h1>Server Status</h1>
       <div className="servers-list-bg">
-        <div className="servers-list">{renderServerCards()}</div>
+        <div className="servers-list">{serversList}</div>
       </div>
       <div className="options">
         <Button
