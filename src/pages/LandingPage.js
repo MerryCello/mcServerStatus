@@ -1,5 +1,5 @@
 import "../App.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import request from "superagent";
 import ServerCard from "../components/ServerCard";
 import Button from "../components/Button";
@@ -76,28 +76,38 @@ const LandingPage = () => {
     });
   };
 
-  const updateServersStatus = (srvs) => {
-    for (let i = 0; i < srvs.length; i++) {
-      const server = srvs[i];
-      // the function here is to preserve the value of i in the async request callback
-      ((srv) => {
-        const startTime = Date.now();
-        request
-          .get("https://api.mcsrvstat.us/2/" + srv.address)
-          .then((res) => {
-            // pingAvgMs - not actual ping
-            const pingAvgMs = Date.now() - startTime;
-            updateServerStatusState(srv.id, { ...res?.body, pingAvgMs });
-          })
-          .catch((e) => {
-            updateServerStatusState(srv.id, {
-              error: e,
-              online: false,
-              loading: false,
-            });
-            console.log(e);
+  const fetchMcsrvstat = (srv) => {
+    const startTime = Date.now();
+    const nowInSeconds = Math.floor(startTime / 1000);
+    const cacheExpiry = srv?.status?.debug?.cacheexpire;
+    if (!cacheExpiry || cacheExpiry <= nowInSeconds) {
+      request
+        .get("https://api.mcsrvstat.us/2/" + srv.address)
+        .then((res) => {
+          // pingAvgMs - not actual ping
+          const pingAvgMs = Date.now() - startTime;
+          updateServerStatusState(srv.id, { ...res?.body, pingAvgMs });
+        })
+        .catch((e) => {
+          updateServerStatusState(srv.id, {
+            error: e,
+            online: false,
+            loading: false,
           });
-      })({ ...server });
+          console.log(e);
+        });
+    } else {
+      setTimeout(
+        () =>
+          updateServerStatusState(srv.id, { ...srv?.status, loading: false }),
+        500
+      );
+    }
+  };
+
+  const updateServersStatus = (srvs) => {
+    for (const server of srvs) {
+      fetchMcsrvstat({ ...server });
     }
   };
 
@@ -148,30 +158,34 @@ const LandingPage = () => {
       />
     ));
 
-  const serversList = useMemo(() => {
+  const renderServersList = () => {
     if (servers.length === 0) {
       return renderLoadingState();
     }
     return renderServerCards();
-  }, [servers.length, ...servers, noServersLoaderIndex]);
+  };
 
   const refreshServers = () => {
-    let serversRst = [];
-    for (const server of servers) {
-      serversRst.push({
+    const serverRst = servers.map((server) => {
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      const cacheExpiry = server?.status?.debug?.cacheexpire;
+      return {
         ...server,
-        status: { ...loadingObj, icon: server.status?.icon },
-      });
-    }
-    setServers(serversRst);
-    updateServersStatus(servers);
+        status:
+          !cacheExpiry || cacheExpiry <= nowInSeconds
+            ? { ...loadingObj, icon: server.status?.icon }
+            : { ...server.status, ...loadingObj },
+      };
+    });
+    setServers(serverRst);
+    updateServersStatus(serverRst);
   };
 
   return (
     <div className="main-container landing-container">
       <h1>Server Status</h1>
       <div className="servers-list-bg">
-        <div className="servers-list">{serversList}</div>
+        <div className="servers-list">{renderServersList()}</div>
       </div>
       <div className="options">
         <Button

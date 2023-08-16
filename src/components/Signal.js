@@ -17,7 +17,9 @@ const Signal = ({ server, size, style }) => {
   const [sigImg, setSigImg] = useState(searchingSignal);
 
   useEffect(() => {
-    if (server?.online) {
+    if (server?.loading) {
+      setSigImg(searchingSignal);
+    } else if (server?.online) {
       let pingAvgMs = server?.pingAvgMs;
       if (pingAvgMs >= EXCELLENT_SIGNAL && pingAvgMs < VERY_GOOD_SIGNAL) {
         setSigImg(fullSignal);
@@ -30,8 +32,6 @@ const Signal = ({ server, size, style }) => {
       } else if (pingAvgMs >= VERY_POOR_SIGNAL) {
         setSigImg(bar1);
       }
-    } else if (server?.loading) {
-      setSigImg(searchingSignal);
     } else {
       setSigImg(noSignal);
     }
