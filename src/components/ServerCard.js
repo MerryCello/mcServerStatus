@@ -53,7 +53,6 @@ const ServerCard = ({
       style={style}
       onFocus={cardOnFocus}
       onBlur={cardOnBlur}
-      // onFocus={cardOnClick}
       onClick={cardOnClick}
       tabIndex={tabIndex}
     >

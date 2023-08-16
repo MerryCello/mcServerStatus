@@ -153,7 +153,7 @@ const LandingPage = () => {
       return renderLoadingState();
     }
     return renderServerCards();
-  }, [servers.length, noServersLoaderIndex]);
+  }, [servers.length, ...servers, noServersLoaderIndex]);
 
   const refreshServers = () => {
     let serversRst = [];
