@@ -12,7 +12,7 @@ type ServerCardProps = {
   style: CSSProperties;
   onFocus: (index: number) => void;
   onBlur: FocusEventHandler<HTMLDivElement>;
-  onClick: (index: number) => void;
+  onClick?: (index: number) => void;
   tabIndex: number;
   index: number;
 };

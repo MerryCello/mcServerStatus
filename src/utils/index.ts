@@ -1,2 +1,1 @@
-export const isNil = (obj: any) =>
-  typeof obj === null || typeof obj === undefined;
+export const isNil = (obj: any) => obj === null || obj === undefined;

@@ -4,7 +4,6 @@ import request from "superagent";
 import ServerCard from "../components/ServerCard";
 import Button from "../components/Button";
 import { getUserServers } from "../firebase/controlers";
-import { useNavigate } from "react-router-dom";
 import { ServerData } from "../firebase/types";
 import { ServerStatus } from "../types";
 

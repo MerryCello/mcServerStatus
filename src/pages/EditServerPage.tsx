@@ -1,14 +1,15 @@
 import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Button from "../components/Button";
 import { isNil } from "../utils";
 import { addUserServer, editUserServer } from "../firebase/controlers";
+import { useButtonNavigate } from "../hooks";
 
 const NAME_PLACEHOLDER = "Minecraft Server";
 
 const EditServerPage: FC = () => {
   const { state: routeParam } = useLocation();
-  const navigate = useNavigate();
+  const navigate = useButtonNavigate();
   const [nameState, setNameState] = useState(
     routeParam?.name ?? NAME_PLACEHOLDER
   );
@@ -43,12 +44,11 @@ const EditServerPage: FC = () => {
     if (nameState === "") setNameState(NAME_PLACEHOLDER);
   };
 
-  const navigateHome = () => setTimeout(() => navigate("/mcServerStatus"), 100); // 100ms for Button sound fx to play
-
   const doneOnClick = () => {
     // no routeParam means that a new server status entry is to be added
     let resolution = Promise.resolve();
     if (isNil(routeParam)) {
+      console.log("routeParam", routeParam);
       resolution = addUserServer({
         address: addressState,
         name: nameState,
@@ -63,7 +63,7 @@ const EditServerPage: FC = () => {
         name: nameState,
       });
     }
-    resolution.then(navigateHome);
+    resolution.then(() => navigate("/mcServerStatus"));
   };
 
   return (
@@ -92,7 +92,7 @@ const EditServerPage: FC = () => {
           <Button onClick={doneOnClick} tabIndex={3} ref={doneRef}>
             Done
           </Button>
-          <Button onClick={navigateHome} tabIndex={4}>
+          <Button linkTo={"/mcServerStatus"} tabIndex={4}>
             Cancel
           </Button>
         </div>

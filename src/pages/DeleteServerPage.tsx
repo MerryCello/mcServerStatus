@@ -1,16 +1,18 @@
 import { FC } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Button from "../components/Button";
 import { deleteUserServer } from "../firebase/controlers";
+import { useButtonNavigate } from "../hooks";
 
 const DeleteServerPage: FC = () => {
   const { state: routeParam } = useLocation();
-  const navigate = useNavigate();
+  const navigate = useButtonNavigate();
+
+  const navigateHome = () => navigate("/mcServerStatus");
 
   const deleteOnClick = () => {
     deleteUserServer(routeParam?.id).then(navigateHome);
   };
-  const navigateHome = () => setTimeout(() => navigate("/mcServerStatus"), 100); // 100ms for Button sound fx to play
 
   return (
     <div className="main-container delete-page-container column">
