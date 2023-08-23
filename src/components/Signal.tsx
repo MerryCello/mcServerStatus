@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { CSSProperties, FC, useEffect, useState } from "react";
 import bar1 from "../images/1-5_Signal.png";
 import bar2 from "../images/2-5_Signal.png";
 import bar3 from "../images/3-5_Signal.png";
@@ -13,13 +13,24 @@ const GOOD_SIGNAL = 2000;
 const VERY_GOOD_SIGNAL = 1700;
 const EXCELLENT_SIGNAL = 0;
 
-const Signal = ({ server, size, style }) => {
+type SignalProps = {
+  server: {
+    hostname: string;
+    online?: boolean;
+    loading?: boolean;
+    pingAvgMs?: number;
+  };
+  size: number;
+  style: CSSProperties;
+};
+
+const Signal: FC<SignalProps> = ({ server, size, style }) => {
   const [sigImg, setSigImg] = useState(searchingSignal);
 
   useEffect(() => {
     if (server?.loading) {
       setSigImg(searchingSignal);
-    } else if (server?.online) {
+    } else if (server?.online && server?.pingAvgMs) {
       let pingAvgMs = server?.pingAvgMs;
       if (pingAvgMs >= EXCELLENT_SIGNAL && pingAvgMs < VERY_GOOD_SIGNAL) {
         setSigImg(fullSignal);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { isNil } from "../utils";
@@ -6,28 +6,36 @@ import { addUserServer, editUserServer } from "../firebase/controlers";
 
 const NAME_PLACEHOLDER = "Minecraft Server";
 
-const EditServerPage = () => {
+const EditServerPage: FC = () => {
   const { state: routeParam } = useLocation();
   const navigate = useNavigate();
   const [nameState, setNameState] = useState(
     routeParam?.name ?? NAME_PLACEHOLDER
   );
   const [addressState, setAddressState] = useState(routeParam?.address ?? "");
-  const doneRef = useRef(null);
+  const doneRef = useRef<{ disabled: boolean | null }>(null);
 
   useEffect(() => {
-    doneRef.current.disabled = addressState === "";
+    if (doneRef.current) {
+      doneRef.current.disabled = addressState === "";
+    }
   }, []);
 
-  const nameInputOnChange = ({ target: input }) => {
+  const nameInputOnChange: ChangeEventHandler<HTMLInputElement> = ({
+    target: input,
+  }) => {
     setNameState(input.value);
   };
-  const addressInputOnChange = ({ target: input }) => {
+  const addressInputOnChange: ChangeEventHandler<HTMLInputElement> = ({
+    target: input,
+  }) => {
     setAddressState(input.value);
-    if (input.value !== "") {
-      doneRef.current.disabled = false;
-    } else {
-      doneRef.current.disabled = true;
+    if (doneRef.current) {
+      if (input.value !== "") {
+        doneRef.current.disabled = false;
+      } else {
+        doneRef.current.disabled = true;
+      }
     }
   };
 

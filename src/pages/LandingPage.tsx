@@ -4,17 +4,24 @@ import request from "superagent";
 import ServerCard from "../components/ServerCard";
 import Button from "../components/Button";
 import { getUserServers } from "../firebase/controlers";
+import { useNavigate } from "react-router-dom";
+import { ServerData } from "../firebase/types";
+import { ServerStatus } from "../types";
 
-const loadingObj = { loading: true };
+const loadingObj: ServerStatus = { loading: true };
 const EDIT = "Edit";
 const DELETE = "Delete";
 const ADD_SERVER = "Add Server";
 const REFRESH = "Refresh";
 const NO_SERVERS_LOADER_STATES = ["O o o", "o O o", "o o O", "o O o"];
 
+interface Server extends ServerData {
+  status: ServerStatus;
+}
+
 const LandingPage = () => {
-  const [servers, setServers] = useState([]);
-  const [srvSelIndex, setSrvSelIndex] = useState(null);
+  const [servers, setServers] = useState<Server[]>([]);
+  const [srvSelIndex, setSrvSelIndex] = useState<number | null>(null);
   const editRef = useRef(null);
   const deleteRef = useRef(null);
   const [editDisabled, setEditDisabled] = useState(true);
@@ -37,13 +44,13 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const serverCardSelect = (index) => {
+  const serverCardSelect = (index: any) => {
     setEditDisabled(false);
     setDeleteDisabled(false);
     setSrvSelIndex(index);
   };
 
-  const serverCardOnBlur = (event) => {
+  const serverCardOnBlur = (event: any) => {
     const element = event?.relatedTarget;
     const elementText = element?.innerHTML;
     // TODO: find better solution than this
@@ -60,12 +67,13 @@ const LandingPage = () => {
     }
   };
 
-  const updateServerStatusState = (serverId, srvStatus) => {
+  const updateServerStatusState = (
+    serverId: string | undefined,
+    srvStatus: ServerStatus
+  ) => {
     setServers((prevServers) => {
       let updatedServers = prevServers;
-      let i = updatedServers.findIndex(
-        (srv) => String(srv.id) === String(serverId)
-      );
+      let i = updatedServers.findIndex((srv) => srv.id === serverId);
       updatedServers[i] = {
         ...updatedServers[i],
         status: srvStatus,
@@ -76,7 +84,7 @@ const LandingPage = () => {
     });
   };
 
-  const fetchMcsrvstat = (srv) => {
+  const fetchMcsrvstat = (srv: Server) => {
     const startTime = Date.now();
     const nowInSeconds = Math.floor(startTime / 1000);
     const cacheExpiry = srv?.status?.debug?.cacheexpire;
@@ -88,7 +96,7 @@ const LandingPage = () => {
           const pingAvgMs = Date.now() - startTime;
           updateServerStatusState(srv.id, { ...res?.body, pingAvgMs });
         })
-        .catch((e) => {
+        .catch((e: Error) => {
           updateServerStatusState(srv.id, {
             error: e,
             online: false,
@@ -105,7 +113,7 @@ const LandingPage = () => {
     }
   };
 
-  const updateServersStatus = (srvs) => {
+  const updateServersStatus = (srvs: Server[]) => {
     for (const server of srvs) {
       fetchMcsrvstat({ ...server });
     }
@@ -192,11 +200,13 @@ const LandingPage = () => {
           ref={editRef}
           disabled={editDisabled}
           linkTo="/mcServerStatus/edit"
-          state={{
-            id: servers[srvSelIndex]?.id,
-            name: servers[srvSelIndex]?.name,
-            address: servers[srvSelIndex]?.address,
-          }}
+          state={
+            srvSelIndex && {
+              id: servers[srvSelIndex]?.id,
+              name: servers[srvSelIndex]?.name,
+              address: servers[srvSelIndex]?.address,
+            }
+          }
         >
           {EDIT}
         </Button>
@@ -204,10 +214,12 @@ const LandingPage = () => {
           ref={deleteRef}
           disabled={deleteDisabled}
           linkTo="/mcServerStatus/delete"
-          state={{
-            id: servers[srvSelIndex]?.id,
-            name: servers[srvSelIndex]?.name,
-          }}
+          state={
+            srvSelIndex && {
+              id: servers[srvSelIndex]?.id,
+              name: servers[srvSelIndex]?.name,
+            }
+          }
         >
           {DELETE}
         </Button>

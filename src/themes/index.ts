@@ -1,9 +1,9 @@
 // TODO: refactor code to put this in use
-let color = {
+let color: { GRAYSCALE: string[]; HUE: string[] } = {
   GRAYSCALE: [],
   HUE: [],
 };
-color.GRAYSCALE[000] = "#000000";
+color.GRAYSCALE[0] = "#000000";
 color.GRAYSCALE[100] = "#282c34";
 color.GRAYSCALE[150] = "#3e3e3e";
 color.GRAYSCALE[200] = "#565656";

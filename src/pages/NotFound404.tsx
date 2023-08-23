@@ -1,7 +1,7 @@
-import React from "react";
+import { FC } from "react";
 import { useRouteError } from "react-router-dom";
 
-const NotFound404 = () => {
+const NotFound404: FC = () => {
   const error = useRouteError();
   console.log(error);
   return (

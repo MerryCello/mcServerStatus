@@ -1,9 +1,25 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { CSSProperties, ReactNode, forwardRef } from "react";
+import { Link, RelativeRoutingType, To } from "react-router-dom";
 import buttonPlate from "../images/Button_Plate.mp3";
 import { isNil } from "../utils";
 
-const Button = React.forwardRef(
+type ButtonProps = {
+  linkTo?: To;
+  state?: any;
+  children: ReactNode;
+  onClick?: () => void;
+  style?: CSSProperties;
+  disabled?: boolean;
+  tabIndex?: number;
+  reloadDocument?: boolean;
+  replace?: boolean;
+  preventScrollReset?: boolean;
+  relative?: RelativeRoutingType;
+};
+
+const buttonPlateAudio = new Audio(buttonPlate);
+
+const Button = forwardRef<any, ButtonProps>(
   (
     {
       linkTo,
@@ -20,11 +36,9 @@ const Button = React.forwardRef(
     },
     ref
   ) => {
-    const buttonPlateAudio = new Audio(buttonPlate);
-
     const onClickCb = () => {
       buttonPlateAudio.play();
-      onClick();
+      onClick?.();
     };
 
     if (!isNil(linkTo)) {
@@ -39,7 +53,7 @@ const Button = React.forwardRef(
             justifyContent: "center",
             ...style,
           }}
-          to={disabled ? "#" : linkTo}
+          to={disabled ? "#" : linkTo!}
           state={state}
           reloadDocument={reloadDocument}
           replace={replace}

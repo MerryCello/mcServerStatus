@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { CSSProperties, FC, FocusEventHandler, useState } from "react";
 import parse from "html-react-parser";
 import Signal from "./Signal";
 import serverDefaultIcon from "../images/serverDefaultIcon.png";
 import { useWindowDimensions } from "../hooks";
+import { ServerStatus } from "../types";
 
-const ServerCard = ({
+type ServerCardProps = {
+  name: string;
+  address: string;
+  status: ServerStatus;
+  style: CSSProperties;
+  onFocus: (index: number) => void;
+  onBlur: FocusEventHandler<HTMLDivElement>;
+  onClick: (index: number) => void;
+  tabIndex: number;
+  index: number;
+};
+
+const ServerCard: FC<ServerCardProps> = ({
   name,
   address,
   status,
@@ -33,12 +46,10 @@ const ServerCard = ({
 
   const cardOnFocus = () => {
     setIsSelected(true);
-    if (onFocus) {
-      onFocus(index);
-    }
+    onFocus?.(index);
   };
 
-  const cardOnBlur = (event) => {
+  const cardOnBlur: FocusEventHandler<HTMLDivElement> = (event) => {
     setIsSelected(false);
     if (onBlur) {
       onBlur(event);

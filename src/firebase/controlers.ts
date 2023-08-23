@@ -8,15 +8,16 @@ import { auth, db } from "./config";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { isNil } from "../utils";
 import { v4 as uuidV4 } from "uuid";
+import { ServerData } from "./types";
 
 const USER_SERVERS_COL = "userServers";
 
 // ==========================GET SERVERS==========================
 /**
  * Get all the user's servers
- * @returns {Promise<{id: string; address: string; name: string;}[] | []>} list of server details
+ * @returns list of server details
  */
-export const getUserServers = () =>
+export const getUserServers = (): Promise<ServerData[]> =>
   new Promise(async (resolve) => {
     let docUid = (await getUserInfo())?.id;
     if (!docUid) {
@@ -26,7 +27,7 @@ export const getUserServers = () =>
         resolve([]);
       }
     }
-    const docRef = doc(db, USER_SERVERS_COL, docUid);
+    const docRef = doc(db, USER_SERVERS_COL, docUid!);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -39,16 +40,19 @@ export const getUserServers = () =>
   });
 
 /**
- * @param {{address: string; name: string;}} data server details
- * @param {number} index array index for ordering servers
+ * @param data server details
+ * @param index array index for ordering servers
  */
-export const addUserServer = (data, index) =>
+export const addUserServer = (
+  data: ServerData,
+  index?: number
+): Promise<void> =>
   new Promise(async (resolve, reject) => {
     data["id"] = uuidV4();
-    let docUid = (await getUserInfo()).id;
+    let docUid = (await getUserInfo())?.id;
     if (!docUid) {
       if (await signIn()) {
-        docUid = (await getUserInfo()).id;
+        docUid = (await getUserInfo())?.id;
       } else {
         reject("unable to authenticate");
       }
@@ -67,7 +71,7 @@ export const addUserServer = (data, index) =>
     }
 
     // insert new server
-    if (index < 0) {
+    if (!isNil(index) && index! < 0) {
       servers.unshift(data);
     } else if (typeof index != "number" || index >= servers.length) {
       servers.push(data);
@@ -75,19 +79,22 @@ export const addUserServer = (data, index) =>
       servers.splice(index, 0, data);
     }
 
-    resolve(updateDoc(doc(db, USER_SERVERS_COL, docUid), { servers }));
+    resolve(updateDoc(doc(db, USER_SERVERS_COL, docUid!), { servers }));
   });
 
 /**
- * @param {{id: string; address: string; name: string;}} data server details to update
- * @param {number} index array index for ordering servers
+ * @param data server details to update
+ * @param index array index for ordering servers
  */
-export const editUserServer = (data, index) =>
+export const editUserServer = (
+  data: ServerData,
+  index?: number
+): Promise<void> =>
   new Promise(async (resolve, reject) => {
-    let docUid = (await getUserInfo()).id;
+    let docUid = (await getUserInfo())?.id;
     if (!docUid) {
       if (await signIn()) {
-        docUid = (await getUserInfo()).id;
+        docUid = (await getUserInfo())?.id;
       } else {
         reject("unable to authenticate");
       }
@@ -96,31 +103,35 @@ export const editUserServer = (data, index) =>
     let servers = await getUserServers();
 
     // Invalid index?
-    if (isNil(servers[index])) {
+    if (isNil(index) || isNil(servers[index!])) {
       // Try finding the server to edit a different way
       index = servers.findIndex((server) => server.id === data.id);
       // Still invalid?
-      if (isNil(servers[index]) || servers[index]?.id !== data?.id) {
+      if (
+        isNil(index) ||
+        isNil(servers[index]) ||
+        servers[index]?.id !== data?.id
+      ) {
         reject(
           `ID of server by index (${servers[index]?.id}) and data's ID (${data?.id}) do not match`
         );
       }
     }
     delete data?.id; // remove ID to keep the one in 'servers'
-    servers[index] = { ...servers[index], ...data };
+    servers[index!] = { ...servers[index!], ...data };
 
-    resolve(updateDoc(doc(db, USER_SERVERS_COL, docUid), { servers }));
+    resolve(updateDoc(doc(db, USER_SERVERS_COL, docUid!), { servers }));
   });
 
 /**
- * @param {string} id server ID
+ * @param id server ID
  */
-export const deleteUserServer = (id) =>
+export const deleteUserServer = (id: string) =>
   new Promise(async (resolve, reject) => {
-    let docUid = (await getUserInfo()).id;
+    let docUid = (await getUserInfo())?.id;
     if (!docUid) {
       if (await signIn()) {
-        docUid = (await getUserInfo()).id;
+        docUid = (await getUserInfo())?.id;
       } else {
         reject("unable to authenticate");
       }
@@ -134,7 +145,7 @@ export const deleteUserServer = (id) =>
     }
     servers.splice(index, 1);
 
-    resolve(updateDoc(doc(db, USER_SERVERS_COL, docUid), { servers }));
+    resolve(updateDoc(doc(db, USER_SERVERS_COL, docUid!), { servers }));
   });
 
 // ========================== AUTH ==========================
@@ -150,10 +161,7 @@ export const signIn = () =>
       });
   });
 
-/**
- * @returns {Promise<{id: string;} | undefined>}
- */
-export const getUserInfo = () =>
+export const getUserInfo = (): Promise<{ id: string } | undefined> =>
   new Promise(async (resolve) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       unsubscribe();
@@ -172,15 +180,9 @@ export const getUserInfo = () =>
     });
   });
 
-/**
- * @returns {Promise<boolean>}
- */
-export const isSignedIn = async () => !!(await getUserInfo());
+export const isSignedIn = async (): Promise<boolean> => !!(await getUserInfo());
 
-/**
- * @returns {Promise<boolean>}
- */
-export const signOut = () =>
+export const signOut = (): Promise<boolean> =>
   new Promise(async (resolve, reject) => {
     try {
       await auth.signOut();

@@ -1,9 +1,9 @@
-import React from "react";
+import { FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { deleteUserServer } from "../firebase/controlers";
 
-const DeleteServerPage = () => {
+const DeleteServerPage: FC = () => {
   const { state: routeParam } = useLocation();
   const navigate = useNavigate();
 
