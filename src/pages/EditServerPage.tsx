@@ -48,7 +48,6 @@ const EditServerPage: FC = () => {
     // no routeParam means that a new server status entry is to be added
     let resolution = Promise.resolve();
     if (isNil(routeParam)) {
-      console.log("routeParam", routeParam);
       resolution = addUserServer({
         address: addressState,
         name: nameState,
