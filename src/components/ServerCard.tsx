@@ -1,9 +1,9 @@
-import { CSSProperties, FC, FocusEventHandler, useState } from "react";
-import parse from "html-react-parser";
-import Signal from "./Signal";
-import serverDefaultIcon from "../images/serverDefaultIcon.png";
-import { useWindowDimensions } from "../hooks";
-import { ServerStatus } from "../types";
+import React, {CSSProperties, FC, FocusEventHandler, useState} from 'react';
+import parse from 'html-react-parser';
+import Signal from './Signal';
+import serverDefaultIcon from '../images/serverDefaultIcon.png';
+import {useWindowDimensions} from '../hooks';
+import {ServerStatus} from '../types';
 
 type ServerCardProps = {
   name: string;
@@ -34,7 +34,7 @@ const ServerCard: FC<ServerCardProps> = ({
   const playersOnline = status?.players?.online;
   const maxPlayers = status?.players?.max;
 
-  const { width } = useWindowDimensions();
+  const {width} = useWindowDimensions();
   const isMobileOrTablet = width < 500;
 
   const cardOnClick = () => {
@@ -59,36 +59,34 @@ const ServerCard: FC<ServerCardProps> = ({
   return (
     // TODO: put inline styles in CSS file
     <div
-      className={"card-grid" + (isSelected ? " card-selected" : "")}
+      className={'card-grid' + (isSelected ? ' card-selected' : '')}
       style={style}
       onFocus={cardOnFocus}
       onBlur={cardOnBlur}
       onClick={cardOnClick}
-      tabIndex={tabIndex}
-    >
-      <div className="card-icon">
-        <img src={icon ? icon : serverDefaultIcon} alt="icon for server" />
+      tabIndex={tabIndex}>
+      <div className='card-icon'>
+        <img src={icon ? icon : serverDefaultIcon} alt='icon for server' />
       </div>
-      <div className="server-details">
-        <div className="text-left">
-          <div className="card-srv-name-status">
+      <div className='server-details'>
+        <div className='text-left'>
+          <div className='card-srv-name-status'>
             <span title={address}>{name}</span>
-            <span className="card-srv-name-status">
+            <span className='card-srv-name-status'>
               {status?.online && (
                 <span
-                  className="pr-2 players-online"
-                  style={{ color: "#7e7e7e" }}
+                  className='pr-2 players-online'
+                  style={{color: '#7e7e7e'}}
                   title={
                     status?.players?.list
-                      ? status.players.list.join("\n")
+                      ? status.players.list.join('\n')
                       : status?.players?.online
-                      ? "No players disclosed"
-                      : "No players online"
-                  }
-                >
+                      ? 'No players disclosed'
+                      : 'No players online'
+                  }>
                   {status?.players
-                    ? (playersOnline ?? "") + "/" + (maxPlayers ?? "")
-                    : "-/-"}
+                    ? (playersOnline ?? '') + '/' + (maxPlayers ?? '')
+                    : '-/-'}
                 </span>
               )}
               <Signal
@@ -99,41 +97,40 @@ const ServerCard: FC<ServerCardProps> = ({
                   pingAvgMs: status?.pingAvgMs,
                 }}
                 size={1}
-                style={{ paddingBottom: 5 }}
+                style={{paddingBottom: 5}}
               />
             </span>
           </div>
         </div>
-        <div className="text-left">
+        <div className='text-left'>
           <p
-            className="m-0"
-            style={status?.online ? { color: "#7e7e7e" } : { color: "red" }}
-          >
+            className='m-0'
+            style={status?.online ? {color: '#7e7e7e'} : {color: 'red'}}>
             {status?.online && motd
               ? parse(
                   motd?.html
                     ?.map((strHtml, i) => `<span key={${i}}>${strHtml}</span>`)
-                    .join("<br/>") || ""
+                    .join('<br/>') || '',
                 )
               : status?.loading
-              ? ""
+              ? ''
               : "Can't connect to server"}
           </p>
         </div>
       </div>
       {isMobileOrTablet && isSelected && (
         <>
-          <p style={{ color: "#7e7e7e" }}>
+          <p style={{color: '#7e7e7e'}}>
             {parse(
-              status?.version?.replace(/ /gm, "<br/>").replace(/,/gm, "") || ""
+              status?.version?.replace(/ /gm, '<br/>').replace(/,/gm, '') || '',
             )}
           </p>
-          <p className="player-list">
+          <p className='player-list'>
             {status?.players?.list
-              ? status.players.list.join(", ")
+              ? status.players.list.join(', ')
               : status?.players?.online
-              ? "No players disclosed"
-              : "No players online"}
+              ? 'No players disclosed'
+              : 'No players online'}
           </p>
         </>
       )}

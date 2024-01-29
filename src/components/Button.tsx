@@ -1,13 +1,13 @@
-import {
+import React, {
   CSSProperties,
   ForwardRefRenderFunction,
   ReactNode,
   forwardRef,
-} from "react";
-import { To } from "react-router-dom";
-import buttonPlate from "../images/Button_Plate.mp3";
-import { isNil } from "../utils";
-import { useButtonNavigate } from "../hooks";
+} from 'react';
+import {To} from 'react-router-dom';
+import buttonPlate from '../images/Button_Plate.mp3';
+import {isNil} from '../utils';
+import {useButtonNavigate} from '../hooks';
 
 type ButtonProps = {
   linkTo?: To;
@@ -22,8 +22,8 @@ type ButtonProps = {
 const buttonPlateAudio = new Audio(buttonPlate);
 
 const ButtonFC: ForwardRefRenderFunction<any, ButtonProps> = (
-  { linkTo, state, children, onClick, style, disabled, tabIndex },
-  ref
+  {linkTo, state, children, onClick, style, disabled, tabIndex},
+  ref,
 ) => {
   const navigate = useButtonNavigate();
 
@@ -31,7 +31,7 @@ const ButtonFC: ForwardRefRenderFunction<any, ButtonProps> = (
     buttonPlateAudio.play();
     onClick?.();
     if (!isNil(linkTo)) {
-      navigate(linkTo!, { state });
+      navigate(linkTo!, {state});
     }
   };
 
@@ -39,11 +39,10 @@ const ButtonFC: ForwardRefRenderFunction<any, ButtonProps> = (
     <button
       ref={ref}
       disabled={disabled}
-      className="button"
+      className='button'
       onClick={onClickCb}
       tabIndex={tabIndex}
-      style={style}
-    >
+      style={style}>
       {children}
     </button>
   );

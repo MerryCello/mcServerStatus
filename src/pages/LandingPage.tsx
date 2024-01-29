@@ -1,18 +1,18 @@
-import "../App.css";
-import { useEffect, useRef, useState } from "react";
-import request from "superagent";
-import ServerCard from "../components/ServerCard";
-import Button from "../components/Button";
-import { getUserServers } from "../firebase/controlers";
-import { ServerData } from "../firebase/types";
-import { ServerStatus } from "../types";
+import React, {useEffect, useRef, useState} from 'react';
+import '../App.css';
+import request from 'superagent';
+import ServerCard from '../components/ServerCard';
+import Button from '../components/Button';
+import {getUserServers} from '../firebase/controlers';
+import {ServerData} from '../firebase/types';
+import {ServerStatus} from '../types';
 
-const loadingObj: ServerStatus = { loading: true };
-const EDIT = "Edit";
-const DELETE = "Delete";
-const ADD_SERVER = "Add Server";
-const REFRESH = "Refresh";
-const NO_SERVERS_LOADER_STATES = ["O o o", "o O o", "o o O", "o O o"];
+const loadingObj: ServerStatus = {loading: true};
+const EDIT = 'Edit';
+const DELETE = 'Delete';
+const ADD_SERVER = 'Add Server';
+const REFRESH = 'Refresh';
+const NO_SERVERS_LOADER_STATES = ['O o o', 'o O o', 'o o O', 'o O o'];
 
 interface Server extends ServerData {
   status: ServerStatus;
@@ -57,7 +57,7 @@ const LandingPage = () => {
       !(
         elementText === EDIT ||
         elementText === DELETE ||
-        element?.classList?.contains("card-grid")
+        element?.classList?.contains('card-grid')
       )
     ) {
       setSrvSelIndex(null);
@@ -68,7 +68,7 @@ const LandingPage = () => {
 
   const updateServerStatusState = (
     serverId: string | undefined,
-    srvStatus: ServerStatus
+    srvStatus: ServerStatus,
   ) => {
     setServers((prevServers) => {
       let updatedServers = prevServers;
@@ -89,11 +89,11 @@ const LandingPage = () => {
     const cacheExpiry = srv?.status?.debug?.cacheexpire;
     if (!cacheExpiry || cacheExpiry <= nowInSeconds) {
       request
-        .get("https://api.mcsrvstat.us/2/" + srv.address)
+        .get('https://api.mcsrvstat.us/2/' + srv.address)
         .then((res) => {
           // pingAvgMs - not actual ping
           const pingAvgMs = Date.now() - startTime;
-          updateServerStatusState(srv.id, { ...res?.body, pingAvgMs });
+          updateServerStatusState(srv.id, {...res?.body, pingAvgMs});
         })
         .catch((e: Error) => {
           updateServerStatusState(srv.id, {
@@ -105,16 +105,15 @@ const LandingPage = () => {
         });
     } else {
       setTimeout(
-        () =>
-          updateServerStatusState(srv.id, { ...srv?.status, loading: false }),
-        500
+        () => updateServerStatusState(srv.id, {...srv?.status, loading: false}),
+        500,
       );
     }
   };
 
   const updateServersStatus = (srvs: Server[]) => {
     for (const server of srvs) {
-      fetchMcsrvstat({ ...server });
+      fetchMcsrvstat({...server});
     }
   };
 
@@ -125,7 +124,7 @@ const LandingPage = () => {
         // because 'noServersLoader' variable will not show the actual value in the
         // setInterval scope.
         setNoServersLoaderIndex(
-          (prevState) => (prevState + 1) % NO_SERVERS_LOADER_STATES.length
+          (prevState) => (prevState + 1) % NO_SERVERS_LOADER_STATES.length,
         );
         // call set state just to get the actual state of 'servers'
         setServers((prevState) => {
@@ -141,24 +140,24 @@ const LandingPage = () => {
 
   const renderLoadingState = () => (
     <div title="(Doesn't actually scan)">
-      <h1 style={{ marginBottom: "0px", marginTop: "25px" }}>
-        {"Scanning for games on your local network"}
+      <h1 style={{marginBottom: '0px', marginTop: '25px'}}>
+        {'Scanning for games on your local network'}
       </h1>
-      <h1 style={{ color: "#7e7e7e", textShadow: "none" }}>
+      <h1 style={{color: '#7e7e7e', textShadow: 'none'}}>
         {NO_SERVERS_LOADER_STATES[noServersLoaderIndex]}
       </h1>
     </div>
   );
 
   const renderServerCards = () =>
-    servers.map(({ name, address, status }, i) => (
+    servers.map(({name, address, status}, i) => (
       <ServerCard
         onFocus={serverCardSelect}
         onBlur={serverCardOnBlur}
         key={i}
         tabIndex={i + 1}
         index={i}
-        style={{ marginBottom: "8px" }}
+        style={{marginBottom: '8px'}}
         name={name}
         address={address}
         status={status}
@@ -180,8 +179,8 @@ const LandingPage = () => {
         ...server,
         status:
           !cacheExpiry || cacheExpiry <= nowInSeconds
-            ? { ...loadingObj, icon: server.status?.icon }
-            : { ...server.status, ...loadingObj },
+            ? {...loadingObj, icon: server.status?.icon}
+            : {...server.status, ...loadingObj},
       };
     });
     setServers(serverRst);
@@ -189,44 +188,41 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="main-container landing-container">
+    <div className='main-container landing-container'>
       <h1>Server Status</h1>
-      <div className="servers-list-bg">
-        <div className="servers-list">{renderServersList()}</div>
+      <div className='servers-list-bg'>
+        <div className='servers-list'>{renderServersList()}</div>
       </div>
-      <div className="options">
+      <div className='options'>
         <Button
           ref={editRef}
           disabled={editDisabled}
-          linkTo="/mcServerStatus/edit"
+          linkTo='/mcServerStatus/edit'
           state={
             srvSelIndex && {
               id: servers[srvSelIndex]?.id,
               name: servers[srvSelIndex]?.name,
               address: servers[srvSelIndex]?.address,
             }
-          }
-        >
+          }>
           {EDIT}
         </Button>
         <Button
           ref={deleteRef}
           disabled={deleteDisabled}
-          linkTo="/mcServerStatus/delete"
+          linkTo='/mcServerStatus/delete'
           state={
             srvSelIndex && {
               id: servers[srvSelIndex]?.id,
               name: servers[srvSelIndex]?.name,
             }
-          }
-        >
+          }>
           {DELETE}
         </Button>
         <Button
           tabIndex={1000}
           ref={addServerRef}
-          linkTo={"/mcServerStatus/add"}
-        >
+          linkTo={'/mcServerStatus/add'}>
           {ADD_SERVER}
         </Button>
         <Button tabIndex={1001} ref={refreshRef} onClick={refreshServers}>

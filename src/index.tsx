@@ -15,7 +15,7 @@ import DeleteServerPage from "./pages/DeleteServerPage";
 const router = createBrowserRouter([
   {
     path: "*",
-    element: <Navigate to="/mcServerStatus" replace />,
+    element: <Navigate to='/mcServerStatus' replace />,
     errorElement: <NotFound404 />,
   },
   {
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/edit",
-    element: <Navigate to="/mcServerStatus/edit" replace />,
+    element: <Navigate to='/mcServerStatus/edit' replace />,
     errorElement: <NotFound404 />,
   },
   {
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/add",
-    element: <Navigate to="/mcServerStatus/add" replace />,
+    element: <Navigate to='/mcServerStatus/add' replace />,
     errorElement: <NotFound404 />,
   },
   {
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/delete",
-    element: <Navigate to="/mcServerStatus/delete" replace />,
+    element: <Navigate to='/mcServerStatus/delete' replace />,
     errorElement: <NotFound404 />,
   },
 ]);
