@@ -3,7 +3,32 @@
   "version": "1.0.0",
   "homepage": "https://merrycello.github.io/mcServerStatus",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "build",
+    "deploy": "gh-pages -d build",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
+    "lint:fix": "lint -- --fix",
+    "pre-commit": "run-p lint tsc",
+    "pre-push": "run-p lint tsc",
+    "tsc": "tsc"
+  },
   "dependencies": {
+    "firebase": "^10.1.0",
+    "html-react-parser": "^3.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.2",
+    "react-scripts": "^5.0.1",
+    "superagent": "^8.0.0",
+    "typescript": "^4.9.5",
+    "uuid": "^9.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -15,25 +40,31 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/superagent": "^4.1.18",
     "@types/uuid": "^9.0.2",
-    "firebase": "^10.1.0",
-    "html-react-parser": "^3.0.4",
-    "nth-check": ">=2.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.4.2",
-    "react-scripts": "^5.0.1",
-    "superagent": "^8.0.0",
-    "typescript": "^4.9.5",
-    "uuid": "^9.0.0",
-    "web-vitals": "^2.1.4"
+    "@typescript-eslint/eslint-plugin": "^5.59.7",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "8.41.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "gh-pages": "^4.0.0",
+    "husky": "^9.0.7",
+    "npm-run-all": "^4.1.5"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+  "overrides": {
+    "@adobe/css-tools": "~>4.3.1",
+    "@babel/traverse": "~>7.23.2",
+    "cookiejar": "~>2.1.4",
+    "follow-redirects": "~>1.15.4",
+    "json5": "~>1.0.2",
+    "loader-utils": "~>3.2.0",
+    "minimatch": "~>3.0.5",
+    "nth-check": "~>2.0.1",
+    "postcss": "~>8.4.31",
+    "qs": "~>6.9.7",
+    "react-devtools-core": "~>4.28.4",
+    "semver": "~>7.5.2",
+    "tough-cookie": "~>4.1.3",
+    "webpack": "~>5.76.0",
+    "word-wrap": "~>1.2.4"
   },
   "eslintConfig": {
     "extends": [
@@ -53,7 +84,10 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "gh-pages": "^4.0.0"
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run pre-commit",
+      "pre-push": "npm run pre-push"
+    }
   }
 }
