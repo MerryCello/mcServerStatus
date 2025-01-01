@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, useEffect, useState} from 'react';
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import bar1 from '../images/1-5_Signal.png';
 import bar2 from '../images/2-5_Signal.png';
 import bar3 from '../images/3-5_Signal.png';
@@ -24,7 +24,7 @@ type SignalProps = {
   style: CSSProperties;
 };
 
-const Signal: FC<SignalProps> = ({server, size, style}) => {
+const Signal: FC<SignalProps> = ({ server, size, style }) => {
   const [sigImg, setSigImg] = useState(searchingSignal);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const Signal: FC<SignalProps> = ({server, size, style}) => {
     <div style={style}>
       <img
         src={sigImg}
-        style={{height: size + 'em', width: 'auto'}}
+        style={{ height: size + 'em', width: 'auto' }}
         alt='visual of signal strength'
       />
     </div>
