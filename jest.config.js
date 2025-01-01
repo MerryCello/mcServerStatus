@@ -21,7 +21,12 @@ const config = {
   collectCoverageFrom: ['src/**/*.{ts,tsx,js,jsx}'],
   coverageDirectory: 'coverage',
   coverageReporters: ['lcov', 'text'],
-  coveragePathIgnorePatterns: ['<rootDir>/__tests__/'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/__tests__/',
+    '<rootDir>/src/index.tsx',
+    '<rootDir>/src/reportWebVitals.ts',
+    '<rootDir>/src/themes/index.ts',
+  ],
   transform: {
     '^.+\\.tsx?$': ['babel-jest'],
   },

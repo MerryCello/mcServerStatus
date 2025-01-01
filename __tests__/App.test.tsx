@@ -1,21 +1,23 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 
 import React from 'react';
-import {render, screen} from '@testing-library/react';
-import {test, expect} from '@jest/globals';
+import { render, screen } from '@testing-library/react';
+import { test, expect } from '@jest/globals';
 import '@testing-library/jest-dom';
 import App from '../src/App';
-import {BrowserRouter} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 
-test('renders learn react link', () => {
-  render(
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>,
-  );
-  const linkElement = screen.getByText(/Server Status/i);
-  // @ts-ignore
-  expect(linkElement).toBeInTheDocument();
+jest.mock('../src/pages/LandingPage', () => 'landing-page');
+
+describe('App', () => {
+  test('renders LandingPage by default', () => {
+    const app = render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>,
+    );
+    const landingPage = screen.getByTestId('LandingPage');
+    expect(landingPage).toBeDefined();
+    expect(app.container).toMatchSnapshot();
+  });
 });
