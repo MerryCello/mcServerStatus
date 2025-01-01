@@ -6,8 +6,8 @@ import React, {
 } from 'react';
 import {To} from 'react-router-dom';
 import buttonPlate from '../images/Button_Plate.mp3';
-import {isNil} from '../utils';
-import {useButtonNavigate} from '../hooks';
+import {isNil} from '../../utils';
+import {useButtonNavigate} from '../../hooks';
 
 type ButtonProps = {
   linkTo?: To;

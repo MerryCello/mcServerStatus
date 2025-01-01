@@ -63,7 +63,10 @@ const initializeFirebase = () => {
     configToUse = firebaseConfigLocal;
   }
 
-  let firebase, analytics, firestore, auth;
+  let firebase: ReturnType<typeof initializeApp>,
+    analytics,
+    firestore: ReturnType<typeof getFirestore>,
+    auth: ReturnType<typeof getAuth>;
 
   // Only initialize firebase once
   try {
@@ -77,7 +80,6 @@ const initializeFirebase = () => {
       analytics = isAnalyticsSupported().then((isSupported) =>
         isSupported ? getAnalytics(firebase) : undefined
       );
-      //  getAnalytics(firebase);
     }
 
     // @ts-ignore
@@ -87,7 +89,7 @@ const initializeFirebase = () => {
     }
 
     return { firebase, analytics, firestore, auth };
-  } catch (e) {
+  } catch (e: any) {
     if (!/already exists/.test(e.message)) {
       console.error("Firebase initialization error", e.stack);
     }
