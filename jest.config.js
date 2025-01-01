@@ -1,7 +1,6 @@
 /** @type {import('jest').Config} */
 const config = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup.tests.ts'],
-  // setupFiles: ['<rootDir>/__tests__/setup.tests.ts'],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/build/',
