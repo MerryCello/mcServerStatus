@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Signal should render bar1 signal when ping is very poor 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;
+
+exports[`Signal should render bar2 signal when ping is poor 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;
+
+exports[`Signal should render bar3 signal when ping is good 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;
+
+exports[`Signal should render bar4 signal when ping is very good 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;
+
+exports[`Signal should render full signal when ping is excellent 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;
+
+exports[`Signal should render no signal when server is offline 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;
+
+exports[`Signal should render searching signal when loading 1`] = `
+<div>
+  <div>
+    <img
+      alt="visual of signal strength"
+      src="test-file-stub"
+      style="height: 2em; width: auto;"
+    />
+  </div>
+</div>
+`;

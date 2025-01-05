@@ -2,8 +2,10 @@
 
 exports[`App renders LandingPage by default 1`] = `
 <div>
-  <landing-page
-    data-testid="LandingPage"
-  />
+  <browserrouter>
+    <landing-page
+      data-testid="LandingPage"
+    />
+  </browserrouter>
 </div>
 `;
