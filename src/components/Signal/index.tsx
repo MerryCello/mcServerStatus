@@ -12,6 +12,7 @@ const POOR_SIGNAL = 4000;
 const GOOD_SIGNAL = 2000;
 const VERY_GOOD_SIGNAL = 1700;
 const EXCELLENT_SIGNAL = 0;
+const IMAGES = { bar1, bar2, bar3, bar4, fullSignal, noSignal, searchingSignal };
 
 type SignalProps = {
   server: {
@@ -25,33 +26,33 @@ type SignalProps = {
 };
 
 const Signal: FC<SignalProps> = ({ server, size, style }) => {
-  const [sigImg, setSigImg] = useState(searchingSignal);
+  const [sigImg, setSigImg] = useState<keyof typeof IMAGES>('searchingSignal');
 
   useEffect(() => {
     if (server?.loading) {
-      setSigImg(searchingSignal);
+      setSigImg('searchingSignal');
     } else if (server?.online && server?.pingAvgMs) {
       let pingAvgMs = server?.pingAvgMs;
       if (pingAvgMs >= EXCELLENT_SIGNAL && pingAvgMs < VERY_GOOD_SIGNAL) {
-        setSigImg(fullSignal);
+        setSigImg('fullSignal');
       } else if (pingAvgMs >= VERY_GOOD_SIGNAL && pingAvgMs < GOOD_SIGNAL) {
-        setSigImg(bar4);
+        setSigImg('bar4');
       } else if (pingAvgMs >= GOOD_SIGNAL && pingAvgMs < POOR_SIGNAL) {
-        setSigImg(bar3);
+        setSigImg('bar3');
       } else if (pingAvgMs >= POOR_SIGNAL && pingAvgMs < VERY_POOR_SIGNAL) {
-        setSigImg(bar2);
-      } else if (pingAvgMs >= VERY_POOR_SIGNAL) {
-        setSigImg(bar1);
+        setSigImg('bar2');
+      } else { // if pingAvgMs >= VERY_POOR_SIGNAL
+        setSigImg('bar1');
       }
     } else {
-      setSigImg(noSignal);
+      setSigImg('noSignal');
     }
   }, [server]);
 
   return (
     <div style={style}>
       <img
-        src={sigImg}
+        src={IMAGES[sigImg]}
         style={{ height: size + 'em', width: 'auto' }}
         alt='visual of signal strength'
       />
