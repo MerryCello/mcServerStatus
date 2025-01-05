@@ -9,8 +9,8 @@
     "test": "jest --watchAll=false",
     "coverage": "jest --coverage --silent",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "pre-deploy": "npm run build",
+    "deploy": "npm run pre-deploy && gh-pages -d build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "run-p lint tsc",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.23.9",
     "@babel/preset-react": "^7.26.3",
     "@babel/preset-typescript": "^7.23.3",

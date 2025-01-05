@@ -1,9 +1,9 @@
 import React, {CSSProperties, FC, FocusEventHandler, useState} from 'react';
 import parse from 'html-react-parser';
 import Signal from '../Signal';
-import serverDefaultIcon from '../images/serverDefaultIcon.png';
-import {useWindowDimensions} from '../../hooks';
-import {ServerStatus} from '../../types';
+import serverDefaultIcon from '../../images/serverDefaultIcon.png';
+import { useWindowDimensions } from '../../hooks';
+import { ServerStatus } from '../../types';
 
 type ServerCardProps = {
   name: string;
