@@ -22,7 +22,7 @@ type ButtonProps = {
 const buttonPlateAudio = new Audio(buttonPlate);
 
 const ButtonFC: ForwardRefRenderFunction<any, ButtonProps> = (
-  {linkTo, state, children, onClick, style, disabled, tabIndex},
+  { linkTo, state, children, onClick, style, disabled, tabIndex },
   ref,
 ) => {
   const navigate = useButtonNavigate();
@@ -31,7 +31,7 @@ const ButtonFC: ForwardRefRenderFunction<any, ButtonProps> = (
     buttonPlateAudio.play();
     onClick?.();
     if (!isNil(linkTo)) {
-      navigate(linkTo!, {state});
+      navigate(linkTo!, { state });
     }
   };
 

@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, FocusEventHandler, useState} from 'react';
+import React, { CSSProperties, FC, FocusEventHandler, useState } from 'react';
 import parse from 'html-react-parser';
 import Signal from '../Signal';
 import serverDefaultIcon from '../../images/serverDefaultIcon.png';
@@ -34,7 +34,7 @@ const ServerCard: FC<ServerCardProps> = ({
   const playersOnline = status?.players?.online;
   const maxPlayers = status?.players?.max;
 
-  const {width} = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const isMobileOrTablet = width < 500;
 
   const cardOnClick = () => {
@@ -76,13 +76,13 @@ const ServerCard: FC<ServerCardProps> = ({
               {status?.online && (
                 <span
                   className='pr-2 players-online'
-                  style={{color: '#7e7e7e'}}
+                  style={{ color: '#7e7e7e' }}
                   title={
                     status?.players?.list
                       ? status.players.list.join('\n')
                       : status?.players?.online
-                      ? 'No players disclosed'
-                      : 'No players online'
+                        ? 'No players disclosed'
+                        : 'No players online'
                   }>
                   {status?.players
                     ? (playersOnline ?? '') + '/' + (maxPlayers ?? '')
@@ -97,7 +97,7 @@ const ServerCard: FC<ServerCardProps> = ({
                   pingAvgMs: status?.pingAvgMs,
                 }}
                 size={1}
-                style={{paddingBottom: 5}}
+                style={{ paddingBottom: 5 }}
               />
             </span>
           </div>
@@ -105,22 +105,22 @@ const ServerCard: FC<ServerCardProps> = ({
         <div className='text-left'>
           <p
             className='m-0'
-            style={status?.online ? {color: '#7e7e7e'} : {color: 'red'}}>
+            style={status?.online ? { color: '#7e7e7e' } : { color: 'red' }}>
             {status?.online && motd
               ? parse(
-                  motd?.html
-                    ?.map((strHtml, i) => `<span key={${i}}>${strHtml}</span>`)
-                    .join('<br/>') || '',
-                )
+                motd?.html
+                  ?.map((strHtml, i) => `<span key={${i}}>${strHtml}</span>`)
+                  .join('<br/>') || '',
+              )
               : status?.loading
-              ? ''
-              : "Can't connect to server"}
+                ? ''
+                : "Can't connect to server"}
           </p>
         </div>
       </div>
       {isMobileOrTablet && isSelected && (
         <>
-          <p style={{color: '#7e7e7e'}}>
+          <p style={{ color: '#7e7e7e' }}>
             {parse(
               status?.version?.replace(/ /gm, '<br/>').replace(/,/gm, '') || '',
             )}
@@ -129,8 +129,8 @@ const ServerCard: FC<ServerCardProps> = ({
             {status?.players?.list
               ? status.players.list.join(', ')
               : status?.players?.online
-              ? 'No players disclosed'
-              : 'No players online'}
+                ? 'No players disclosed'
+                : 'No players online'}
           </p>
         </>
       )}
