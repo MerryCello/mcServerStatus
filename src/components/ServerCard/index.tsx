@@ -67,12 +67,18 @@ const ServerCard: FC<ServerCardProps> = ({
       onClick={cardOnClick}
       tabIndex={tabIndex}>
       <div className='card-icon'>
-        <img data-testid='server-icon' src={icon ? icon : serverDefaultIcon} alt='icon for server' />
+        <img
+          data-testid='server-icon'
+          src={icon ? icon : serverDefaultIcon}
+          alt='icon for server'
+        />
       </div>
       <div className='server-details'>
         <div className='text-left'>
           <div className='card-srv-name-status'>
-            <span data-testid='server-card-title' title={address}>{name}</span>
+            <span data-testid='server-card-title' title={address}>
+              {name}
+            </span>
             <span className='card-srv-name-status'>
               {status?.online && (
                 <span
@@ -104,7 +110,8 @@ const ServerCard: FC<ServerCardProps> = ({
           </div>
         </div>
         <div className='text-left'>
-          <p data-testid='server-card-body'
+          <p
+            data-testid='server-card-body'
             className='m-0'
             style={status?.online ? { color: '#7e7e7e' } : { color: 'red' }}>
             {status?.online && motd
@@ -121,12 +128,16 @@ const ServerCard: FC<ServerCardProps> = ({
       </div>
       {isMobileOrTablet && isSelected && (
         <>
-          <p data-testid='server-card-body-mobile-selected' style={{ color: '#7e7e7e' }}>
+          <p
+            data-testid='server-card-body-mobile-selected'
+            style={{ color: '#7e7e7e' }}>
             {parse(
               status?.version?.replace(/ /gm, '<br/>').replace(/,/gm, '') || '',
             )}
           </p>
-          <p data-testid='server-card-body-player-list-mobile-selected' className='player-list'>
+          <p
+            data-testid='server-card-body-player-list-mobile-selected'
+            className='player-list'>
             {status?.players?.list
               ? status.players.list.join(', ')
               : status?.players?.online
