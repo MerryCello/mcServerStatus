@@ -45,7 +45,7 @@ test-player-3"
             >
               1/10
             </span>
-            <signal
+            <signal-icon
               data-testid="server-signal-strength"
               server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true,\\"loading\\":false,\\"pingAvgMs\\":60}"
               size="1"
@@ -116,7 +116,7 @@ exports[`ServerCard should render error/offline state 1`] = `
           <span
             class="card-srv-name-status"
           >
-            <signal
+            <signal-icon
               data-testid="server-signal-strength"
               server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":false}"
               size="1"
@@ -175,7 +175,7 @@ exports[`ServerCard should render loading state 1`] = `
           <span
             class="card-srv-name-status"
           >
-            <signal
+            <signal-icon
               data-testid="server-signal-strength"
               server="{\\"hostname\\":\\"test.server.com\\",\\"loading\\":true}"
               size="1"
@@ -240,7 +240,7 @@ exports[`ServerCard should show "No players disclosed" when players are online b
             >
               5/10
             </span>
-            <signal
+            <signal-icon
               data-testid="server-signal-strength"
               server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true}"
               size="1"
@@ -321,7 +321,7 @@ exports[`ServerCard should show "no players online" when no players are online 1
             >
               0/10
             </span>
-            <signal
+            <signal-icon
               data-testid="server-signal-strength"
               server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true}"
               size="1"
@@ -394,7 +394,7 @@ test-player-3"
             >
               1/10
             </span>
-            <signal
+            <signal-icon
               data-testid="server-signal-strength"
               server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true}"
               size="1"
