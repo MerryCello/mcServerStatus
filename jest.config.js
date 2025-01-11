@@ -31,9 +31,10 @@ const config = {
     '^.+\\.tsx?$': ['babel-jest'],
   },
   moduleNameMapper: {
-    "\\.(css|less|sass|scss)$": "<rootDir>/__tests__/__mocks__/styleMock.js",
-    "\\.(gif|ttf|eot|svg|mp3|png)$": "<rootDir>/__tests__/__mocks__/fileMock.js"
-  }
+    '\\.(css|less|sass|scss)$': '<rootDir>/__tests__/__mocks__/styleMock.js',
+    '\\.(gif|ttf|eot|svg|mp3|png)$':
+      '<rootDir>/__tests__/__mocks__/fileMock.js',
+  },
 };
 
 module.exports = { ...config };
