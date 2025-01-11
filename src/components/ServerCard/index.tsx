@@ -9,7 +9,7 @@ type ServerCardProps = {
   name: string;
   address: string;
   status: ServerStatus;
-  style: CSSProperties;
+  style?: CSSProperties;
   onFocus: (index: number) => void;
   onBlur: FocusEventHandler<HTMLDivElement>;
   onClick?: (index: number) => void;
@@ -39,9 +39,7 @@ const ServerCard: FC<ServerCardProps> = ({
 
   const cardOnClick = () => {
     setIsSelected(true);
-    if (onClick) {
-      onClick(index);
-    }
+    onClick?.(index);
   };
 
   const cardOnFocus = () => {
@@ -51,9 +49,7 @@ const ServerCard: FC<ServerCardProps> = ({
 
   const cardOnBlur: FocusEventHandler<HTMLDivElement> = (event) => {
     setIsSelected(false);
-    if (onBlur) {
-      onBlur(event);
-    }
+    onBlur?.(event);
   };
 
   return (
@@ -117,7 +113,10 @@ const ServerCard: FC<ServerCardProps> = ({
             {status?.online && motd
               ? parse(
                   motd?.html
-                    ?.map((strHtml, i) => `<span key={${i}}>${strHtml}</span>`)
+                    ?.map(
+                      (strHtml, i) =>
+                        `<span data-testid="motd-html" key={${i}}>${strHtml}</span>`,
+                    )
                     .join('<br/>') || '',
                 )
               : status?.loading
