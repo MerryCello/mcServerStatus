@@ -5,4 +5,4 @@
 require('@testing-library/jest-dom');
 require('@testing-library/jest-dom/extend-expect');
 
-jest.spyOn(global.Audio.prototype, 'play').mockImplementation(jest.fn());
+global.Audio?.prototype && jest.spyOn(global.Audio.prototype, 'play').mockImplementation(jest.fn());

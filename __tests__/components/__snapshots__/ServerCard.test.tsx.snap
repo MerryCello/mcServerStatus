@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ServerCard renders ServerCard 1`] = `
+<div>
+  <div
+    class="card-grid"
+    data-testid="server-card"
+    style="width: 200px; height: 200px;"
+    tabindex="0"
+  >
+    <div
+      class="card-icon"
+    >
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-icon"
+      />
+    </div>
+    <div
+      class="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <div
+              style="padding-bottom: 5px;"
+            >
+              <img
+                alt="visual of signal strength"
+                src="test-file-stub"
+                style="height: 1em; width: auto;"
+              />
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: red;"
+        >
+          Can't connect to server
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -59,6 +59,7 @@ const ServerCard: FC<ServerCardProps> = ({
   return (
     // TODO: put inline styles in CSS file
     <div
+      data-testid='server-card'
       className={'card-grid' + (isSelected ? ' card-selected' : '')}
       style={style}
       onFocus={cardOnFocus}
@@ -66,15 +67,16 @@ const ServerCard: FC<ServerCardProps> = ({
       onClick={cardOnClick}
       tabIndex={tabIndex}>
       <div className='card-icon'>
-        <img src={icon ? icon : serverDefaultIcon} alt='icon for server' />
+        <img data-testid='server-icon' src={icon ? icon : serverDefaultIcon} alt='icon for server' />
       </div>
       <div className='server-details'>
         <div className='text-left'>
           <div className='card-srv-name-status'>
-            <span title={address}>{name}</span>
+            <span data-testid='server-card-title' title={address}>{name}</span>
             <span className='card-srv-name-status'>
               {status?.online && (
                 <span
+                  data-testid='server-player-count'
                   className='pr-2 players-online'
                   style={{ color: '#7e7e7e' }}
                   title={
@@ -84,12 +86,11 @@ const ServerCard: FC<ServerCardProps> = ({
                         ? 'No players disclosed'
                         : 'No players online'
                   }>
-                  {status?.players
-                    ? (playersOnline ?? '') + '/' + (maxPlayers ?? '')
-                    : '-/-'}
+                  {`${playersOnline ?? '-'}/${maxPlayers ?? '-'}`}
                 </span>
               )}
               <Signal
+                data-testid='server-signal-strength'
                 server={{
                   hostname: address,
                   online: status?.online,
@@ -103,7 +104,7 @@ const ServerCard: FC<ServerCardProps> = ({
           </div>
         </div>
         <div className='text-left'>
-          <p
+          <p data-testid='server-card-body'
             className='m-0'
             style={status?.online ? { color: '#7e7e7e' } : { color: 'red' }}>
             {status?.online && motd
@@ -120,12 +121,12 @@ const ServerCard: FC<ServerCardProps> = ({
       </div>
       {isMobileOrTablet && isSelected && (
         <>
-          <p style={{ color: '#7e7e7e' }}>
+          <p data-testid='server-card-body-mobile-selected' style={{ color: '#7e7e7e' }}>
             {parse(
               status?.version?.replace(/ /gm, '<br/>').replace(/,/gm, '') || '',
             )}
           </p>
-          <p className='player-list'>
+          <p data-testid='server-card-body-player-list-mobile-selected' className='player-list'>
             {status?.players?.list
               ? status.players.list.join(', ')
               : status?.players?.online
