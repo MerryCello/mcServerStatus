@@ -129,14 +129,14 @@ const ServerCard: FC<ServerCardProps> = ({
       {isMobileOrTablet && isSelected && (
         <>
           <p
-            data-testid='server-card-body-mobile-selected'
+            data-testid='mobile-server-card-versions'
             style={{color: '#7e7e7e'}}>
             {parse(
               status?.version?.replace(/ /gm, '<br/>').replace(/,/gm, '') || '',
             )}
           </p>
           <p
-            data-testid='server-card-body-player-list-mobile-selected'
+            data-testid='mobile-server-card-player-list'
             className='player-list'>
             {status?.players?.list
               ? status.players.list.join(', ')

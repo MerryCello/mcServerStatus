@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ServerCard renders ServerCard 1`] = `
+exports[`ServerCard should render data state 1`] = `
 <div>
   <div
     class="card-grid"
@@ -35,15 +35,93 @@ exports[`ServerCard renders ServerCard 1`] = `
           <span
             class="card-srv-name-status"
           >
-            <div
-              style="padding-bottom: 5px;"
+            <span
+              class="pr-2 players-online"
+              data-testid="server-player-count"
+              style="color: rgb(126, 126, 126);"
+              title="test-player-1
+test-player-2
+test-player-3"
             >
-              <img
-                alt="visual of signal strength"
-                src="test-file-stub"
-                style="height: 1em; width: auto;"
-              />
-            </div>
+              1/10
+            </span>
+            <signal
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true,\\"loading\\":false,\\"pingAvgMs\\":60}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: rgb(126, 126, 126);"
+        >
+          <span
+            data-testid="motd-html"
+          >
+            <span
+              style="color: rgb(85, 85, 255);"
+            >
+              Worlds Without End
+            </span>
+            <br />
+            <span>
+              This Awesome!
+            </span>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ServerCard should render error/offline state 1`] = `
+<div>
+  <div
+    class="card-grid"
+    data-testid="server-card"
+    tabindex="0"
+  >
+    <div
+      class="card-icon"
+    >
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <signal
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":false}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
           </span>
         </div>
       </div>
@@ -59,6 +137,302 @@ exports[`ServerCard renders ServerCard 1`] = `
         </p>
       </div>
     </div>
+  </div>
+</div>
+`;
+
+exports[`ServerCard should render loading state 1`] = `
+<div>
+  <div
+    class="card-grid"
+    data-testid="server-card"
+    tabindex="0"
+  >
+    <div
+      class="card-icon"
+    >
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <signal
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\",\\"loading\\":true}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: red;"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ServerCard should show "No players disclosed" when players are online but not disclosed 1`] = `
+<div>
+  <div
+    class="card-grid card-selected"
+    data-testid="server-card"
+    tabindex="0"
+  >
+    <div
+      class="card-icon"
+    >
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <span
+              class="pr-2 players-online"
+              data-testid="server-player-count"
+              style="color: rgb(126, 126, 126);"
+              title="No players disclosed"
+            >
+              5/10
+            </span>
+            <signal
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: rgb(126, 126, 126);"
+        >
+          <span
+            data-testid="motd-html"
+          >
+            A Server
+          </span>
+        </p>
+      </div>
+    </div>
+    <p
+      data-testid="mobile-server-card-versions"
+      style="color: rgb(126, 126, 126);"
+    />
+    <p
+      class="player-list"
+      data-testid="mobile-server-card-player-list"
+    >
+      No players disclosed
+    </p>
+  </div>
+</div>
+`;
+
+exports[`ServerCard should show "no players online" when no players are online 1`] = `
+<div>
+  <div
+    class="card-grid card-selected"
+    data-testid="server-card"
+    tabindex="0"
+  >
+    <div
+      class="card-icon"
+    >
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <span
+              class="pr-2 players-online"
+              data-testid="server-player-count"
+              style="color: rgb(126, 126, 126);"
+              title="No players online"
+            >
+              0/10
+            </span>
+            <signal
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: rgb(126, 126, 126);"
+        >
+          <span
+            data-testid="motd-html"
+          >
+            A Server
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ServerCard should show player list for mobile view when selected 1`] = `
+<div>
+  <div
+    class="card-grid card-selected"
+    data-testid="server-card"
+    tabindex="0"
+  >
+    <div
+      class="card-icon"
+    >
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <span
+              class="pr-2 players-online"
+              data-testid="server-player-count"
+              style="color: rgb(126, 126, 126);"
+              title="test-player-1
+test-player-2
+test-player-3"
+            >
+              1/10
+            </span>
+            <signal
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\",\\"online\\":true}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: rgb(126, 126, 126);"
+        >
+          <span
+            data-testid="motd-html"
+          >
+            Worlds Without End
+          </span>
+        </p>
+      </div>
+    </div>
+    <p
+      data-testid="mobile-server-card-versions"
+      style="color: rgb(126, 126, 126);"
+    >
+      1.16.5
+      <br />
+      1.17.1
+    </p>
+    <p
+      class="player-list"
+      data-testid="mobile-server-card-player-list"
+    >
+      test-player-1, test-player-2, test-player-3
+    </p>
   </div>
 </div>
 `;
