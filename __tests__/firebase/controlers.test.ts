@@ -203,7 +203,7 @@ describe('Firebase Controllers', () => {
       await expect(
         editUserServer(updatedServer, undefined, mockgGetUserServersWithAuth),
       ).rejects.toEqual(
-        `ID of server by index (undefined) and data's ID (server2) do not match`,
+        `ID of server by index (-1) and data's ID (server2) do not match`,
       );
     });
   });
