@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import {getUserServers} from '../firebase/controlers';
 import {ServerData} from '../firebase/types';
 import {ServerStatus} from '../types';
+import {isNil} from 'lodash';
 
 const loadingObj: ServerStatus = {loading: true};
 const EDIT = 'Edit';
@@ -199,11 +200,13 @@ const LandingPage = () => {
           disabled={editDisabled}
           linkTo='/mcServerStatus/edit'
           state={
-            srvSelIndex && {
-              id: servers[srvSelIndex]?.id,
-              name: servers[srvSelIndex]?.name,
-              address: servers[srvSelIndex]?.address,
-            }
+            !isNil(srvSelIndex)
+              ? {
+                  id: servers[srvSelIndex]?.id,
+                  name: servers[srvSelIndex]?.name,
+                  address: servers[srvSelIndex]?.address,
+                }
+              : {}
           }>
           {EDIT}
         </Button>
