@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import '../App.css';
 import request from 'superagent';
 import ServerCard from '../components/ServerCard';
 import Button from '../components/Button';
-import { getUserServers } from '../firebase/controlers';
-import { ServerData } from '../firebase/types';
-import { ServerStatus } from '../types';
+import {getUserServers} from '../firebase/controlers';
+import {ServerData} from '../firebase/types';
+import {ServerStatus} from '../types';
 
-const loadingObj: ServerStatus = { loading: true };
+const loadingObj: ServerStatus = {loading: true};
 const EDIT = 'Edit';
 const DELETE = 'Delete';
 const ADD_SERVER = 'Add Server';
@@ -93,7 +93,7 @@ const LandingPage = () => {
         .then((res) => {
           // pingAvgMs - not actual ping
           const pingAvgMs = Date.now() - startTime;
-          updateServerStatusState(srv.id, { ...res?.body, pingAvgMs });
+          updateServerStatusState(srv.id, {...res?.body, pingAvgMs});
         })
         .catch((e: Error) => {
           updateServerStatusState(srv.id, {
@@ -105,7 +105,7 @@ const LandingPage = () => {
         });
     } else {
       setTimeout(
-        () => updateServerStatusState(srv.id, { ...srv?.status, loading: false }),
+        () => updateServerStatusState(srv.id, {...srv?.status, loading: false}),
         500,
       );
     }
@@ -113,7 +113,7 @@ const LandingPage = () => {
 
   const updateServersStatus = (srvs: Server[]) => {
     for (const server of srvs) {
-      fetchMcsrvstat({ ...server });
+      fetchMcsrvstat({...server});
     }
   };
 
@@ -140,24 +140,24 @@ const LandingPage = () => {
 
   const renderLoadingState = () => (
     <div title="(Doesn't actually scan)">
-      <h1 style={{ marginBottom: '0px', marginTop: '25px' }}>
+      <h1 style={{marginBottom: '0px', marginTop: '25px'}}>
         {'Scanning for games on your local network'}
       </h1>
-      <h1 style={{ color: '#7e7e7e', textShadow: 'none' }}>
+      <h1 style={{color: '#7e7e7e', textShadow: 'none'}}>
         {NO_SERVERS_LOADER_STATES[noServersLoaderIndex]}
       </h1>
     </div>
   );
 
   const renderServerCards = () =>
-    servers.map(({ name, address, status }, i) => (
+    servers.map(({name, address, status}, i) => (
       <ServerCard
         onFocus={serverCardSelect}
         onBlur={serverCardOnBlur}
         key={i}
         tabIndex={i + 1}
         index={i}
-        style={{ marginBottom: '8px' }}
+        style={{marginBottom: '8px'}}
         name={name}
         address={address}
         status={status}
@@ -179,8 +179,8 @@ const LandingPage = () => {
         ...server,
         status:
           !cacheExpiry || cacheExpiry <= nowInSeconds
-            ? { ...loadingObj, icon: server.status?.icon }
-            : { ...server.status, ...loadingObj },
+            ? {...loadingObj, icon: server.status?.icon}
+            : {...server.status, ...loadingObj},
       };
     });
     setServers(serverRst);
