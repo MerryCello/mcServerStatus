@@ -9,12 +9,13 @@
     "test": "jest --watchAll=false",
     "coverage": "jest --coverage --silent",
     "eject": "react-scripts eject",
-    "pre-deploy": "npm run build",
+    "git-tag": "git tag \"v`node.exe -p \"require('./package.json').version\"`\"",
+    "pre-deploy": "run-p test lint tsc && npm run build && npm run git-tag",
     "deploy": "npm run pre-deploy && gh-pages -d build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "pre-commit": "run-p lint tsc",
-    "pre-push": "run-p lint tsc",
+    "pre-commit": "run-p test lint tsc",
+    "pre-push": "run-p test lint tsc",
     "tsc": "tsc"
   },
   "dependencies": {
