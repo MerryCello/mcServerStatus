@@ -1,11 +1,6 @@
 # Minecraft Server Status
 A place to get the status of a minecraft server(s)
 
-## Deploy
-`git push heroku master`\
-OR\
-`npm run deploy`
-
 <!-- # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
