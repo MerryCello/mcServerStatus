@@ -6,7 +6,7 @@
 import {doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import {auth, db} from './config';
 import {onAuthStateChanged, signInAnonymously} from 'firebase/auth';
-import {isNil} from '../utils';
+import {isNil, omit} from 'lodash';
 import {v4 as uuidV4} from 'uuid';
 import {ServerData} from './types';
 
@@ -17,11 +17,14 @@ const USER_SERVERS_COL = 'userServers';
  * Get all the user's servers
  * @returns list of server details
  */
-export const getUserServers = async (): Promise<ServerData[]> => {
-  let docUid = (await getUserInfo())?.id;
+export const getUserServers = async (
+  getUserInfoLocal = getUserInfo,
+  signInLocal = signIn,
+): Promise<ServerData[]> => {
+  let docUid = (await getUserInfoLocal())?.id;
   if (!docUid) {
-    if (await signIn()) {
-      docUid = (await getUserInfo())?.id;
+    if (await signInLocal()) {
+      docUid = (await getUserInfoLocal())?.id;
     } else {
       return [];
     }
@@ -39,24 +42,36 @@ export const getUserServers = async (): Promise<ServerData[]> => {
 };
 
 /**
+ * Utility function for add/edit/deleteUserServer functions
+ */
+export const getUserServersWithAuth = async (
+  getUserInfoLocal = getUserInfo,
+  signInLocal = signIn,
+  getUserServersLocal = getUserServers,
+) => {
+  let docUid = (await getUserInfoLocal())?.id;
+  if (!docUid) {
+    if (!(await signInLocal())) {
+      throw 'unable to authenticate';
+    }
+    docUid = (await getUserInfoLocal())?.id;
+  }
+
+  return {servers: await getUserServersLocal(), docUid};
+};
+
+/**
  * @param data server details
  * @param index array index for ordering servers
  */
 export const addUserServer = async (
   data: ServerData,
   index?: number,
+  getUserServersWithAuthLocal = getUserServersWithAuth,
 ): Promise<void> => {
   data['id'] = uuidV4();
-  let docUid = (await getUserInfo())?.id;
-  if (!docUid) {
-    if (await signIn()) {
-      docUid = (await getUserInfo())?.id;
-    } else {
-      throw 'unable to authenticate';
-    }
-  }
+  const {servers, docUid} = await getUserServersWithAuthLocal();
 
-  let servers = await getUserServers();
   // validate data
   const isInvalidData = !!servers.find((server) => server.id === data?.id);
 
@@ -83,33 +98,26 @@ export const addUserServer = async (
 export const editUserServer = async (
   data: ServerData,
   index?: number,
+  getUserServersWithAuthLocal = getUserServersWithAuth,
 ): Promise<void> => {
-  let docUid = (await getUserInfo())?.id;
-  if (!docUid) {
-    if (await signIn()) {
-      docUid = (await getUserInfo())?.id;
-    } else {
-      throw 'unable to authenticate';
-    }
-  }
-
-  let servers = await getUserServers();
+  const {servers, docUid} = await getUserServersWithAuthLocal();
 
   // Invalid index?
-  if (isNil(index) || isNil(servers[index!])) {
+  if (isNil(index) || isNil(servers[index])) {
     // Try finding the server to edit a different way
-    index = servers.findIndex((server) => server.id === data.id);
+    index = servers.findIndex((server) => server.id === data?.id);
     // Still invalid?
     if (
       isNil(index) ||
       isNil(servers[index]) ||
       servers[index]?.id !== data?.id
     ) {
-      throw `ID of server by index (${servers[index]?.id}) and data's ID (${data?.id}) do not match`;
+      throw `ID of server by index (${
+        servers[index]?.id ?? index
+      }) and data's ID (${data?.id}) do not match`;
     }
   }
-  delete data?.id; // remove ID to keep the one in 'servers'
-  servers[index!] = {...servers[index!], ...data};
+  servers[index] = {...servers[index], ...omit(data, ['id'])};
 
   return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {servers});
 };
@@ -117,17 +125,12 @@ export const editUserServer = async (
 /**
  * @param id server ID
  */
-export const deleteUserServer = async (id: string): Promise<void> => {
-  let docUid = (await getUserInfo())?.id;
-  if (!docUid) {
-    if (await signIn()) {
-      docUid = (await getUserInfo())?.id;
-    } else {
-      throw 'unable to authenticate';
-    }
-  }
+export const deleteUserServer = async (
+  id: string,
+  getUserServersWithAuthLocal = getUserServersWithAuth,
+): Promise<void> => {
+  const {servers, docUid} = await getUserServersWithAuthLocal();
 
-  let servers = await getUserServers();
   const index = servers.findIndex((server) => server.id === id);
 
   if (isNil(servers[index])) {
@@ -153,7 +156,7 @@ export const signIn = (): Promise<boolean> =>
 
 export const getUserInfo = (): Promise<{id: string} | undefined> =>
   new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
       let userInfo = undefined;
       try {
@@ -170,7 +173,9 @@ export const getUserInfo = (): Promise<{id: string} | undefined> =>
     });
   });
 
-export const isSignedIn = async (): Promise<boolean> => !!(await getUserInfo());
+export const isSignedIn = async (
+  getUserInfoLocal = getUserInfo,
+): Promise<boolean> => !!(await getUserInfoLocal());
 
 export const signOut = (): Promise<boolean> =>
   new Promise((resolve, reject) => {
