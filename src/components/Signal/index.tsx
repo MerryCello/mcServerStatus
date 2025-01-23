@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useEffect, useState } from 'react';
+import React, {CSSProperties, FC, useEffect, useState} from 'react';
 import bar1 from '../../images/1-5_Signal.png';
 import bar2 from '../../images/2-5_Signal.png';
 import bar3 from '../../images/3-5_Signal.png';
@@ -12,7 +12,7 @@ const POOR_SIGNAL = 4000;
 const GOOD_SIGNAL = 2000;
 const VERY_GOOD_SIGNAL = 1700;
 const EXCELLENT_SIGNAL = 0;
-const IMAGES = { bar1, bar2, bar3, bar4, fullSignal, noSignal, searchingSignal };
+const IMAGES = {bar1, bar2, bar3, bar4, fullSignal, noSignal, searchingSignal};
 
 type SignalProps = {
   server: {
@@ -25,7 +25,7 @@ type SignalProps = {
   style: CSSProperties;
 };
 
-const Signal: FC<SignalProps> = ({ server, size, style }) => {
+const Signal: FC<SignalProps> = ({server, size, style}) => {
   const [sigImg, setSigImg] = useState<keyof typeof IMAGES>('searchingSignal');
 
   useEffect(() => {
@@ -41,7 +41,8 @@ const Signal: FC<SignalProps> = ({ server, size, style }) => {
         setSigImg('bar3');
       } else if (pingAvgMs >= POOR_SIGNAL && pingAvgMs < VERY_POOR_SIGNAL) {
         setSigImg('bar2');
-      } else { // if pingAvgMs >= VERY_POOR_SIGNAL
+      } else {
+        // if pingAvgMs >= VERY_POOR_SIGNAL
         setSigImg('bar1');
       }
     } else {
@@ -53,7 +54,7 @@ const Signal: FC<SignalProps> = ({ server, size, style }) => {
     <div style={style}>
       <img
         src={IMAGES[sigImg]}
-        style={{ height: size + 'em', width: 'auto' }}
+        style={{height: size + 'em', width: 'auto'}}
         alt='visual of signal strength'
       />
     </div>
@@ -61,3 +62,4 @@ const Signal: FC<SignalProps> = ({ server, size, style }) => {
 };
 
 export default Signal;
+export {Signal};

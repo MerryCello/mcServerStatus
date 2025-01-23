@@ -150,3 +150,4 @@ const ServerCard: FC<ServerCardProps> = ({
 };
 
 export default ServerCard;
+export {ServerCard};
