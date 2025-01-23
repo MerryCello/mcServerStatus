@@ -51,7 +51,7 @@ const LandingPage = () => {
   };
 
   const serverCardOnBlur = (event: any) => {
-    const element = event?.relatedTarget;
+    const element = event?.relatedTarget ?? event?.target;
     const elementText = element?.innerHTML;
     // TODO: find better solution than this
     if (
