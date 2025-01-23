@@ -1,8 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import '../App.css';
 import request from 'superagent';
-import ServerCard from '../components/ServerCard';
-import Button from '../components/Button';
+import {Button, Loading, ServerCard} from '../components';
 import {getUserServers} from '../firebase/controlers';
 import {ServerData} from '../firebase/types';
 import {ServerStatus} from '../types';
@@ -13,7 +12,6 @@ const EDIT = 'Edit';
 const DELETE = 'Delete';
 const ADD_SERVER = 'Add Server';
 const REFRESH = 'Refresh';
-const NO_SERVERS_LOADER_STATES = ['O o o', 'o O o', 'o o O', 'o O o'];
 
 interface Server extends ServerData {
   status: ServerStatus;
@@ -26,12 +24,10 @@ const LandingPage = () => {
   const deleteRef = useRef(null);
   const [editDisabled, setEditDisabled] = useState(true);
   const [deleteDisabled, setDeleteDisabled] = useState(true);
-  const [noServersLoaderIndex, setNoServersLoaderIndex] = useState(0);
   const addServerRef = useRef(null);
   const refreshRef = useRef(null);
 
   useEffect(() => {
-    const interval = setLoadingInterval();
     getUserServers().then((serversResponse) => {
       const serversWithLoading = serversResponse.map((server) => ({
         ...server,
@@ -40,8 +36,6 @@ const LandingPage = () => {
       setServers(serversWithLoading);
       updateServersStatus(serversWithLoading);
     });
-
-    return () => clearInterval(interval);
   }, []);
 
   const serverCardSelect = (index: any) => {
@@ -118,38 +112,6 @@ const LandingPage = () => {
     }
   };
 
-  const setLoadingInterval = () => {
-    const interval = setInterval(() => {
-      if (servers.length === 0) {
-        // Have to use setState function to get the actual state of 'noServersLoader'
-        // because 'noServersLoader' variable will not show the actual value in the
-        // setInterval scope.
-        setNoServersLoaderIndex(
-          (prevState) => (prevState + 1) % NO_SERVERS_LOADER_STATES.length,
-        );
-        // call set state just to get the actual state of 'servers'
-        setServers((prevState) => {
-          if (prevState.length !== 0) {
-            clearInterval(interval);
-          }
-          return prevState;
-        });
-      }
-    }, 300);
-    return interval;
-  };
-
-  const renderLoadingState = () => (
-    <div title="(Doesn't actually scan)">
-      <h1 style={{marginBottom: '0px', marginTop: '25px'}}>
-        {'Scanning for games on your local network'}
-      </h1>
-      <h1 style={{color: '#7e7e7e', textShadow: 'none'}}>
-        {NO_SERVERS_LOADER_STATES[noServersLoaderIndex]}
-      </h1>
-    </div>
-  );
-
   const renderServerCards = () =>
     servers.map(({name, address, status}, i) => (
       <ServerCard
@@ -167,7 +129,7 @@ const LandingPage = () => {
 
   const renderServersList = () => {
     if (servers.length === 0) {
-      return renderLoadingState();
+      return <Loading servers={servers} setServers={setServers} />;
     }
     return renderServerCards();
   };
