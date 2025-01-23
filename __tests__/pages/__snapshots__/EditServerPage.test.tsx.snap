@@ -1,0 +1,62 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditServerPage should render to edit an existing server 1`] = `
+<div>
+  <div
+    class="main-container edit-page-container"
+  >
+    <h1
+      data-testid="page-title"
+    >
+      Edit Server Info
+    </h1>
+    <div
+      class="edit-form-container column"
+    >
+      <div
+        class="inputs column"
+      >
+        <label
+          data-testid="name-label"
+        >
+          Server Name
+        </label>
+        <input
+          data-testid="name-input"
+          tabindex="1"
+          type="text"
+          value="aServer"
+        />
+        <label
+          data-testid="address-label"
+        >
+          Server Address
+        </label>
+        <input
+          data-testid="address-input"
+          tabindex="2"
+          type="text"
+          value="123.123.123.123"
+        />
+      </div>
+      <div
+        class="buttons column"
+      >
+        <mc-button
+          data-testid="done-button"
+          tabindex="3"
+        >
+          Done
+        </mc-button>
+        <mc-button
+          data-testid="cancel-button"
+          linkto="/mcServerStatus"
+          tabindex="4"
+        >
+          Cancel
+        </mc-button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

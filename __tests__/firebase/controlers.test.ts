@@ -14,7 +14,7 @@ import {
   signOut,
   getUserServersWithAuth,
 } from '../../src/firebase/controlers';
-import {cloneDeep} from 'lodash';
+import {cloneDeep, noop} from 'lodash';
 
 jest.mock('firebase/firestore');
 jest.mock('firebase/auth');
@@ -312,6 +312,7 @@ describe('Firebase Controllers', () => {
     });
 
     it('should handle sign out error', async () => {
+      jest.spyOn(console, 'error').mockImplementation(noop);
       (auth.signOut as jest.Mock).mockRejectedValueOnce(
         new Error('sign out error'),
       );
