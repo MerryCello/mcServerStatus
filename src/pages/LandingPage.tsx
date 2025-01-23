@@ -215,10 +215,12 @@ const LandingPage = () => {
           disabled={deleteDisabled}
           linkTo='/mcServerStatus/delete'
           state={
-            srvSelIndex && {
-              id: servers[srvSelIndex]?.id,
-              name: servers[srvSelIndex]?.name,
-            }
+            !isNil(srvSelIndex)
+              ? {
+                  id: servers[srvSelIndex]?.id,
+                  name: servers[srvSelIndex]?.name,
+                }
+              : {}
           }>
           {DELETE}
         </Button>
