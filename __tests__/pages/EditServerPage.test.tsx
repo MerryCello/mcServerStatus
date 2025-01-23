@@ -107,5 +107,6 @@ describe('EditServerPage', () => {
   });
 
   test.todo('should render to add a new server');
+  test.todo('should place default server name when input name is blank');
   test.todo('should navigate to the landing when cancel is pressed');
 });
