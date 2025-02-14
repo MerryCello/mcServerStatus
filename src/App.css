@@ -9,7 +9,7 @@ body {
   background-repeat: repeat;
   background-size: cover;
   color: #fcfcfc;
-  font-family: "Minecraft";
+  font-family: 'Minecraft';
   font-size: 1.4rem;
 }
 h1 {
@@ -51,6 +51,35 @@ div.card-grid:focus,
 .card-selected {
   background-color: black;
   outline: 3px solid white;
+}
+
+div.server-card-arrows-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  flex: 1 1;
+  padding: 0.8rem 0.35rem 0.8rem 0.7rem;
+  height: 6rem;
+  width: 6rem;
+  background-color: #a0a0a088;
+  justify-content: center;
+}
+
+.server-card-arrows-container > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.server-card-arrows-container > div > img {
+  width: 85%;
+  object-fit: contain;
+}
+.server-card-arrows-container > img {
+  width: 55%;
+  object-fit: contain;
+}
+.hidden-arrow {
+  opacity: 0;
 }
 
 .card-icon {
@@ -263,6 +292,17 @@ input:focus {
   }
   .delete-page-container div.buttons > .button:first-child {
     margin-right: 5vw !important;
+  }
+  div.server-card-arrows-container {
+    padding: 12px 0px;
+    height: calc(15vw - 8px);
+    width: calc(15vw - 8px);
+  }
+  .server-card-arrows-container > div {
+    align-items: center;
+  }
+  .server-card-arrows-container > div > img {
+    width: 35%;
   }
   .card-icon > img {
     width: 15vw;
