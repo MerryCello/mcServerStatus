@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 import React, {useState} from 'react';
 import {fireEvent, render} from '@testing-library/react';
+import {noop} from 'lodash';
 import ServerCard from '../../src/components/ServerCard';
-import {noop} from '../../src/utils';
 import {useWindowDimensions} from '../../src/hooks';
 
 jest.mock('../../src/hooks/useWindowDimensions');
