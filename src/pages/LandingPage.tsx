@@ -147,7 +147,7 @@ const LandingPage = () => {
       moveItemInArray(prevServers, oldIndex, newIndex),
     );
     moveUserServer(oldIndex, newIndex).catch(console.error);
-    setEnableServersDnd(false);
+    disableServersDnd();
   };
   const moveServerUp = (oldIndex: number) => {
     // @ts-ignore - don't need targetRect property
