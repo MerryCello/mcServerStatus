@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import React, {useState} from 'react';
-import {render} from '@testing-library/react';
+import {fireEvent, render} from '@testing-library/react';
 import ServerCard from '../../src/components/ServerCard';
 import {noop} from '../../src/utils';
 import {useWindowDimensions} from '../../src/hooks';
@@ -132,7 +132,7 @@ describe('ServerCard', () => {
     expect(container).toMatchSnapshot();
   });
 
-  xit('should call onFocus when focused', () => {
+  it('should call onFocus when focused', () => {
     const onFocus = jest.fn();
     const setIsSelected = jest.fn();
     (useState as jest.Mock).mockReturnValue([false, setIsSelected]);
@@ -147,8 +147,8 @@ describe('ServerCard', () => {
         index={0}
       />,
     );
-    const cardDetails = serverCard.getByTestId('server-details');
-    cardDetails.focus();
+    const card = serverCard.getByTestId('server-card');
+    card.focus();
     expect(onFocus).toHaveBeenCalledWith(0);
     expect(setIsSelected).toHaveBeenCalledWith(true);
   });
@@ -341,16 +341,22 @@ describe('ServerCard', () => {
     downButton.click();
     expect(onClickMock).not.toHaveBeenCalled();
 
+    // TODO: Finish writting this test
     // expect(container).toMatchSnapshot();
   });
 
   it('should call onUpClick when the UP button is clicked', () => {
     const onUpClickMock = jest.fn();
-    const setShowArrowsMock = jest.fn();
+    const setSetShouldShowArrows = jest.fn();
     (useState as jest.Mock)
       .mockReturnValueOnce([true, noop])
-      .mockReturnValueOnce([false, setShowArrowsMock]);
-    const serverCard = (
+      .mockReturnValueOnce([true, setSetShouldShowArrows]);
+    (useWindowDimensions as jest.Mock).mockReturnValueOnce({
+      width: 1000,
+      height: 800,
+    });
+
+    const {container, getByTestId} = render(
       <ServerCard
         showUpArrow
         onUpClick={onUpClickMock}
@@ -359,48 +365,59 @@ describe('ServerCard', () => {
         status={{}}
         onFocus={noop}
         onBlur={noop}
-        tabIndex={0}
+        tabIndex={1}
         index={0}
-      />
+      />,
     );
-    const {container, getByTestId, queryByTestId, rerender} =
-      render(serverCard);
-    const card = getByTestId('server-card');
-    let upButton = queryByTestId('up-button');
-    expect(upButton).toBeNull();
-    // @ts-expect-error
-    card.onmouseover?.({});
-    expect(setShowArrowsMock).toBeCalledWith(true);
 
-    (useState as jest.Mock)
-      .mockReturnValueOnce([true, noop])
-      .mockReturnValueOnce([true, setShowArrowsMock]);
-    rerender(serverCard);
-    upButton = getByTestId('up-button');
+    const card = getByTestId('server-card');
+    let upButton = getByTestId('up-button');
+    fireEvent.mouseEnter(card);
+    expect(setSetShouldShowArrows).toBeCalledWith(true);
     expect(upButton).toBeInTheDocument();
-    upButton.click();
+    fireEvent.click(upButton);
     expect(onUpClickMock).toBeCalledWith(0);
 
-    // expect(container).toMatchSnapshot();
+    // TODO: Finish writting this test
+    expect(container).toMatchSnapshot();
   });
 
-  xit('should call onDownClick when the DOWN button is clicked', () => {
-    (useState as jest.Mock).mockReturnValue([true, noop]);
+  it('should call onDownClick when the DOWN button is clicked', () => {
+    const onDownClickMock = jest.fn();
+    const setSetShouldShowArrows = jest.fn();
+    (useState as jest.Mock)
+      .mockReturnValueOnce([true, noop])
+      .mockReturnValueOnce([true, setSetShouldShowArrows]);
+    (useWindowDimensions as jest.Mock).mockReturnValueOnce({
+      width: 1000,
+      height: 800,
+    });
+
     const {container, getByTestId} = render(
       <ServerCard
         showDownArrow
+        onDownClick={onDownClickMock}
         name='Test Server'
         address='test.server.com'
         status={{}}
         onFocus={noop}
         onBlur={noop}
-        tabIndex={0}
+        tabIndex={1}
         index={0}
       />,
     );
-    const upButton = getByTestId('down-button');
-    expect(upButton).toBeInTheDocument();
 
-    // expect(container).toMatchSnapshot();
+    const card = getByTestId('server-card');
+    let downButton = getByTestId('down-button');
+    fireEvent.mouseEnter(card);
+    expect(setSetShouldShowArrows).toBeCalledWith(true);
+    expect(downButton).toBeInTheDocument();
+    fireEvent.click(downButton);
+    expect(onDownClickMock).toBeCalledWith(0);
+
+    // TODO: Finish writting this test
+    expect(container).toMatchSnapshot();
   });
+
+  test.todo('add more tests');
 });

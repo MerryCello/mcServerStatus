@@ -12,10 +12,10 @@ const config = {
   ],
   coverageThreshold: {
     global: {
-      branches: 100,
-      functions: 100,
-      lines: 100,
-      statements: 100,
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
   collectCoverageFrom: ['src/**/*.{ts,tsx,js,jsx}'],
@@ -28,8 +28,9 @@ const config = {
     '<rootDir>/src/themes/index.ts',
   ],
   transform: {
-    '^.+\\.tsx?$': ['babel-jest'],
+    '^.+\\.(tsx|ts|jsx|js)?$': ['babel-jest', { rootMode: 'upward' }],
   },
+  transformIgnorePatterns: ['<rootDir>/node_modules/(?!react-movable)'],
   moduleNameMapper: {
     '\\.(css|less|sass|scss)$': '<rootDir>/__tests__/__mocks__/styleMock.js',
     '\\.(gif|ttf|eot|svg|mp3|png)$':

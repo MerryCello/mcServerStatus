@@ -1,15 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
-import '../App.css';
+import {isNil} from 'lodash';
+import {List} from 'react-movable';
 import request from 'superagent';
+import {useLongPress} from 'use-long-press';
+import '../App.css';
 import {Button, Loading, ServerCard} from '../components';
-import {getUserServers} from '../firebase/controlers';
+import {getUserServers, moveUserServer} from '../firebase/controlers';
 import {ServerData} from '../firebase/types';
 import {ServerStatus} from '../types';
-import {isNil} from 'lodash';
-import {arrayMove, List} from 'react-movable';
 import {useWindowDimensions} from '../hooks';
 import {ServerCardProps} from '../components/ServerCard/types';
-import {useLongPress} from 'use-long-press';
+import {moveItemInArray} from '../utils';
 
 const loadingObj: ServerStatus = {loading: true};
 const EDIT = 'Edit';
@@ -146,8 +147,10 @@ const LandingPage = () => {
     oldIndex,
     newIndex,
   }) => {
-    setServers((prevServers) => arrayMove(prevServers, oldIndex, newIndex));
-    // TODO: update server order in firebase
+    setServers((prevServers) =>
+      moveItemInArray(prevServers, oldIndex, newIndex),
+    );
+    moveUserServer(oldIndex, newIndex).catch(console.error);
     setEnableServersDnd(false);
   };
   const moveServerUp = (oldIndex: number) => {
