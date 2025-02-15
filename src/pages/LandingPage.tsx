@@ -62,6 +62,7 @@ const LandingPage = () => {
     }
   };
 
+  const disableServersDnd = () => setEnableServersDnd(false);
   const serverCardOnBlur: ServerCardProps['onBlur'] = (event) => {
     const element = event?.relatedTarget ?? event?.target;
     const elementText = element?.innerHTML;
@@ -70,10 +71,9 @@ const LandingPage = () => {
       setSrvSelIndex(null);
       setEditDisabled(true);
       setDeleteDisabled(true);
-      setEnableServersDnd(false);
+      disableServersDnd();
     }
   };
-  const disableServersDnd = () => setEnableServersDnd(false);
 
   const updateServerStatusState = (
     serverId: string | undefined,
