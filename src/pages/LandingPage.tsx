@@ -64,10 +64,17 @@ const LandingPage = () => {
 
   const disableServersDnd = () => setEnableServersDnd(false);
   const serverCardOnBlur: ServerCardProps['onBlur'] = (event) => {
-    const element = event?.relatedTarget ?? event?.target;
+    const element = event?.relatedTarget ?? event?.target; // needed for iOS
     const elementText = element?.innerHTML;
     // TODO: find better solution than this
-    if (!(elementText === EDIT || elementText === DELETE)) {
+    if (
+      !(
+        elementText === EDIT ||
+        elementText === DELETE ||
+        // needed for iOS
+        element?.classList?.contains('card-grid')
+      )
+    ) {
       setSrvSelIndex(null);
       setEditDisabled(true);
       setDeleteDisabled(true);
