@@ -55,14 +55,10 @@ const LandingPage = () => {
     setDeleteDisabled(false);
     setSrvSelIndex(index);
   };
-  const beforeCardDrag: List<Server>['props']['beforeDrag'] = ({index}) => {
+  const onCardDrag = (params: {index?: number; newIndex?: number}) => {
+    const index = params.index ?? params.newIndex;
     if (!disableList && !isNil(index) && index >= 0) {
       serverCardSelect(index);
-    }
-  };
-  const afterCardDrag: List<Server>['props']['afterDrag'] = ({newIndex}) => {
-    if (!disableList && !isNil(newIndex) && newIndex >= 0) {
-      serverCardSelect(newIndex);
     }
   };
 
@@ -231,8 +227,8 @@ const LandingPage = () => {
           onChange={onServerListChange}
           renderList={renderServersList}
           renderItem={renderServerCard}
-          beforeDrag={beforeCardDrag}
-          afterDrag={afterCardDrag}
+          beforeDrag={onCardDrag}
+          afterDrag={onCardDrag}
           lockVertically
         />
       </div>
