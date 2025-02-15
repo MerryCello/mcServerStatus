@@ -1,5 +1,175 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ServerCard should call onDownClick when the DOWN button is clicked 1`] = `
+<div>
+  <div
+    class="card-grid card-selected"
+    data-testid="server-card"
+    tabindex="1"
+  >
+    <div
+      class="card-icon"
+    >
+      <div
+        class="server-card-arrows-container"
+        data-test-id="arrows"
+      >
+        <div>
+          <img
+            alt="button to move the server card up"
+            class="hidden-arrow"
+            data-testid="up-button"
+            src="test-file-stub"
+          />
+          <img
+            alt="button to move the server card down"
+            class=""
+            data-testid="down-button"
+            src="test-file-stub"
+          />
+        </div>
+        <img
+          alt=""
+          class="hidden-arrow"
+          data-testid="play-button"
+          src="test-file-stub"
+        />
+      </div>
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+      data-testid="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <signal-icon
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\"}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: red;"
+        >
+          Can't connect to server
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ServerCard should call onUpClick when the UP button is clicked 1`] = `
+<div>
+  <div
+    class="card-grid card-selected"
+    data-testid="server-card"
+    tabindex="1"
+  >
+    <div
+      class="card-icon"
+    >
+      <div
+        class="server-card-arrows-container"
+        data-test-id="arrows"
+      >
+        <div>
+          <img
+            alt="button to move the server card up"
+            class=""
+            data-testid="up-button"
+            src="test-file-stub"
+          />
+          <img
+            alt="button to move the server card down"
+            class="hidden-arrow"
+            data-testid="down-button"
+            src="test-file-stub"
+          />
+        </div>
+        <img
+          alt=""
+          class="hidden-arrow"
+          data-testid="play-button"
+          src="test-file-stub"
+        />
+      </div>
+      <img
+        alt="icon for server"
+        data-testid="server-icon"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      class="server-details"
+      data-testid="server-details"
+    >
+      <div
+        class="text-left"
+      >
+        <div
+          class="card-srv-name-status"
+        >
+          <span
+            data-testid="server-card-title"
+            title="test.server.com"
+          >
+            Test Server
+          </span>
+          <span
+            class="card-srv-name-status"
+          >
+            <signal-icon
+              data-testid="server-signal-strength"
+              server="{\\"hostname\\":\\"test.server.com\\"}"
+              size="1"
+              style="padding-bottom: 5px;"
+            />
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-left"
+      >
+        <p
+          class="m-0"
+          data-testid="server-card-body"
+          style="color: red;"
+        >
+          Can't connect to server
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ServerCard should render data state 1`] = `
 <div>
   <div
@@ -19,6 +189,7 @@ exports[`ServerCard should render data state 1`] = `
     </div>
     <div
       class="server-details"
+      data-testid="server-details"
     >
       <div
         class="text-left"
@@ -100,6 +271,7 @@ exports[`ServerCard should render error/offline state 1`] = `
     </div>
     <div
       class="server-details"
+      data-testid="server-details"
     >
       <div
         class="text-left"
@@ -159,6 +331,7 @@ exports[`ServerCard should render loading state 1`] = `
     </div>
     <div
       class="server-details"
+      data-testid="server-details"
     >
       <div
         class="text-left"
@@ -208,6 +381,25 @@ exports[`ServerCard should show "No players disclosed" when players are online b
     <div
       class="card-icon"
     >
+      <div
+        class="server-card-arrows-container"
+        data-test-id="arrows"
+      >
+        <div>
+          <img
+            alt="button to move the server card up"
+            class="hidden-arrow"
+            data-testid="up-button"
+            src="test-file-stub"
+          />
+          <img
+            alt="button to move the server card down"
+            class="hidden-arrow"
+            data-testid="down-button"
+            src="test-file-stub"
+          />
+        </div>
+      </div>
       <img
         alt="icon for server"
         data-testid="server-icon"
@@ -216,6 +408,7 @@ exports[`ServerCard should show "No players disclosed" when players are online b
     </div>
     <div
       class="server-details"
+      data-testid="server-details"
     >
       <div
         class="text-left"
@@ -282,7 +475,7 @@ exports[`ServerCard should show "No players disclosed" when players are online b
 exports[`ServerCard should show "no players online" when no players are online 1`] = `
 <div>
   <div
-    class="card-grid card-selected"
+    class="card-grid"
     data-testid="server-card"
     tabindex="0"
   >
@@ -297,6 +490,7 @@ exports[`ServerCard should show "no players online" when no players are online 1
     </div>
     <div
       class="server-details"
+      data-testid="server-details"
     >
       <div
         class="text-left"
@@ -360,6 +554,25 @@ exports[`ServerCard should show player list for mobile view when selected 1`] = 
     <div
       class="card-icon"
     >
+      <div
+        class="server-card-arrows-container"
+        data-test-id="arrows"
+      >
+        <div>
+          <img
+            alt="button to move the server card up"
+            class="hidden-arrow"
+            data-testid="up-button"
+            src="test-file-stub"
+          />
+          <img
+            alt="button to move the server card down"
+            class="hidden-arrow"
+            data-testid="down-button"
+            src="test-file-stub"
+          />
+        </div>
+      </div>
       <img
         alt="icon for server"
         data-testid="server-icon"
@@ -368,6 +581,7 @@ exports[`ServerCard should show player list for mobile view when selected 1`] = 
     </div>
     <div
       class="server-details"
+      data-testid="server-details"
     >
       <div
         class="text-left"

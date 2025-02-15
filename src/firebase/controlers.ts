@@ -9,6 +9,7 @@ import {onAuthStateChanged, signInAnonymously} from 'firebase/auth';
 import {isNil, omit} from 'lodash';
 import {v4 as uuidV4} from 'uuid';
 import {ServerData} from './types';
+import {indexIsOutOfBounds, moveItemInArray} from '../utils';
 
 const USER_SERVERS_COL = 'userServers';
 
@@ -120,6 +121,36 @@ export const editUserServer = async (
   servers[index] = {...servers[index], ...omit(data, ['id'])};
 
   return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {servers});
+};
+
+/**
+ * @param oldIndex server index to move
+ * @param newIndex new index for the server
+ */
+export const moveUserServer = async (
+  oldIndex: number,
+  newIndex: number,
+  getUserServersWithAuthLocal = getUserServersWithAuth,
+): Promise<void> => {
+  if (oldIndex === newIndex) {
+    return;
+  }
+  if (typeof oldIndex !== 'number' || typeof newIndex !== 'number') {
+    throw `moveUserServer: invalid index - oldIndex: ${oldIndex}, newIndex: ${newIndex}`;
+  }
+
+  const {servers, docUid} = await getUserServersWithAuthLocal();
+
+  if (indexIsOutOfBounds(servers, oldIndex)) {
+    throw `moveUserServer: old index (${oldIndex}) out of bounds`;
+  }
+  if (indexIsOutOfBounds(servers, newIndex)) {
+    throw `moveUserServer: new index (${newIndex}) out of bounds`;
+  }
+
+  return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {
+    servers: moveItemInArray(servers, oldIndex, newIndex),
+  });
 };
 
 /**

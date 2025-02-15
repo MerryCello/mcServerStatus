@@ -13,6 +13,7 @@ import {
   isSignedIn,
   signOut,
   getUserServersWithAuth,
+  moveUserServer,
 } from '../../src/firebase/controlers';
 import {cloneDeep, noop} from 'lodash';
 
@@ -205,6 +206,97 @@ describe('Firebase Controllers', () => {
       ).rejects.toEqual(
         `ID of server by index (-1) and data's ID (server2) do not match`,
       );
+    });
+  });
+
+  describe('moveUserServer', () => {
+    it('should move a server to a new index', async () => {
+      const mockServers = [
+        {id: 'server1', name: 'Server 1'},
+        {id: 'server2', name: 'Server 2'},
+        {id: 'server3', name: 'Server 3'},
+      ];
+      const mockgGetUserServersWithAuth = jest.fn().mockResolvedValueOnce({
+        servers: cloneDeep(mockServers),
+        docUid: 'user123',
+      });
+
+      await moveUserServer(0, 2, mockgGetUserServersWithAuth);
+
+      expect(mockgGetUserServersWithAuth).toHaveBeenCalled();
+      expect(updateDoc).toHaveBeenCalledWith(
+        doc(expect.anything(), 'userServers', 'user123'),
+        {
+          servers: [
+            {id: 'server2', name: 'Server 2'},
+            {id: 'server3', name: 'Server 3'},
+            {id: 'server1', name: 'Server 1'},
+          ],
+        },
+      );
+    });
+
+    it('should throw error if old index is out of bounds', async () => {
+      const mockServers = [
+        {id: 'server1', name: 'Server 1'},
+        {id: 'server2', name: 'Server 2'},
+      ];
+      const mockgGetUserServersWithAuth = jest.fn().mockResolvedValueOnce({
+        servers: cloneDeep(mockServers),
+        docUid: 'user123',
+      });
+
+      await expect(
+        moveUserServer(-1, 1, mockgGetUserServersWithAuth),
+      ).rejects.toEqual('moveUserServer: old index (-1) out of bounds');
+    });
+
+    it('should throw error if new index is out of bounds', async () => {
+      const mockServers = [
+        {id: 'server1', name: 'Server 1'},
+        {id: 'server2', name: 'Server 2'},
+      ];
+      const mockgGetUserServersWithAuth = jest.fn().mockResolvedValueOnce({
+        servers: cloneDeep(mockServers),
+        docUid: 'user123',
+      });
+
+      await expect(
+        moveUserServer(0, 3, mockgGetUserServersWithAuth),
+      ).rejects.toEqual('moveUserServer: new index (3) out of bounds');
+    });
+
+    it('should throw error if indices are not numbers', async () => {
+      const mockServers = [
+        {id: 'server1', name: 'Server 1'},
+        {id: 'server2', name: 'Server 2'},
+      ];
+      const mockgGetUserServersWithAuth = jest.fn().mockResolvedValueOnce({
+        servers: cloneDeep(mockServers),
+        docUid: 'user123',
+      });
+
+      await expect(
+        moveUserServer('a' as any, 1, mockgGetUserServersWithAuth),
+      ).rejects.toEqual(
+        'moveUserServer: invalid index - oldIndex: a, newIndex: 1',
+      );
+    });
+
+    it('should do nothing if old index and new index are the same', async () => {
+      const mockServers = [
+        {id: 'server1', name: 'Server 1'},
+        {id: 'server2', name: 'Server 2'},
+      ];
+      const mockgGetUserServersWithAuth = jest.fn().mockResolvedValueOnce({
+        servers: cloneDeep(mockServers),
+        docUid: 'user123',
+      });
+
+      await moveUserServer(1, 1, mockgGetUserServersWithAuth);
+
+      expect(mockgGetUserServersWithAuth).not.toHaveBeenCalled();
+      expect(updateDoc).not.toHaveBeenCalled();
     });
   });
 

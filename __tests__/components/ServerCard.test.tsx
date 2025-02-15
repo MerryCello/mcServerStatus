@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 import React, {useState} from 'react';
-import {render} from '@testing-library/react';
+import {fireEvent, render} from '@testing-library/react';
+import {noop} from 'lodash';
 import ServerCard from '../../src/components/ServerCard';
-import {noop} from '../../src/utils';
 import {useWindowDimensions} from '../../src/hooks';
 
 jest.mock('../../src/hooks/useWindowDimensions');
@@ -187,7 +187,7 @@ describe('ServerCard', () => {
   it('should call onClick with index when clicked', () => {
     const onClick = jest.fn();
     const setIsSelected = jest.fn();
-    (useState as jest.Mock).mockReturnValue([false, setIsSelected]);
+    (useState as jest.Mock).mockReturnValueOnce([false, setIsSelected]);
     const serverCardElement = () => (
       <ServerCard
         name='Test Server'
@@ -203,10 +203,11 @@ describe('ServerCard', () => {
     const {getByTestId, rerender} = render(serverCardElement());
     const card = getByTestId('server-card');
     expect(card).not.toHaveClass('card-selected');
-    card.click();
+    const cardDetails = getByTestId('server-details');
+    cardDetails.click();
     expect(onClick).toHaveBeenCalledWith(0);
     expect(setIsSelected).toHaveBeenCalledWith(true);
-    (useState as jest.Mock).mockReturnValue([true, setIsSelected]);
+    (useState as jest.Mock).mockReturnValueOnce([true, setIsSelected]);
     rerender(serverCardElement());
     expect(card).toHaveClass('card-selected');
   });
@@ -241,6 +242,7 @@ describe('ServerCard', () => {
   });
 
   it('should show "No players disclosed" when players are online but not disclosed', () => {
+    (useState as jest.Mock).mockReturnValue([true, noop]);
     (useWindowDimensions as jest.Mock).mockReturnValueOnce({
       width: 450,
       height: 800,
@@ -299,7 +301,6 @@ describe('ServerCard', () => {
         onBlur={noop}
         tabIndex={0}
         index={0}
-        isSelected={true}
       />,
     );
     const mobileCardVersions = getByTestId('mobile-server-card-versions');
@@ -313,4 +314,110 @@ describe('ServerCard', () => {
 
     expect(container).toMatchSnapshot();
   });
+
+  it('should hide UP and DOWN buttons when showUpButton and showDownButton are false', () => {
+    (useState as jest.Mock).mockReturnValue([true, noop]);
+    const onClickMock = jest.fn();
+    const {container, getByTestId} = render(
+      <ServerCard
+        showUpArrow={false}
+        showDownArrow={false}
+        onUpClick={onClickMock}
+        onDownClick={onClickMock}
+        name='Test Server'
+        address='test.server.com'
+        status={{}}
+        onFocus={noop}
+        onBlur={noop}
+        tabIndex={0}
+        index={0}
+      />,
+    );
+    const upButton = getByTestId('up-button');
+    const downButton = getByTestId('down-button');
+    expect(upButton).toHaveClass('hidden-arrow');
+    expect(downButton).toHaveClass('hidden-arrow');
+    upButton.click();
+    downButton.click();
+    expect(onClickMock).not.toHaveBeenCalled();
+
+    // TODO: Finish writting this test
+    // expect(container).toMatchSnapshot();
+  });
+
+  it('should call onUpClick when the UP button is clicked', () => {
+    const onUpClickMock = jest.fn();
+    const setSetShouldShowArrows = jest.fn();
+    (useState as jest.Mock)
+      .mockReturnValueOnce([true, noop])
+      .mockReturnValueOnce([true, setSetShouldShowArrows]);
+    (useWindowDimensions as jest.Mock).mockReturnValueOnce({
+      width: 1000,
+      height: 800,
+    });
+
+    const {container, getByTestId} = render(
+      <ServerCard
+        showUpArrow
+        onUpClick={onUpClickMock}
+        name='Test Server'
+        address='test.server.com'
+        status={{}}
+        onFocus={noop}
+        onBlur={noop}
+        tabIndex={1}
+        index={0}
+      />,
+    );
+
+    const card = getByTestId('server-card');
+    let upButton = getByTestId('up-button');
+    fireEvent.mouseEnter(card);
+    expect(setSetShouldShowArrows).toBeCalledWith(true);
+    expect(upButton).toBeInTheDocument();
+    fireEvent.click(upButton);
+    expect(onUpClickMock).toBeCalledWith(0);
+
+    // TODO: Finish writting this test
+    expect(container).toMatchSnapshot();
+  });
+
+  it('should call onDownClick when the DOWN button is clicked', () => {
+    const onDownClickMock = jest.fn();
+    const setSetShouldShowArrows = jest.fn();
+    (useState as jest.Mock)
+      .mockReturnValueOnce([true, noop])
+      .mockReturnValueOnce([true, setSetShouldShowArrows]);
+    (useWindowDimensions as jest.Mock).mockReturnValueOnce({
+      width: 1000,
+      height: 800,
+    });
+
+    const {container, getByTestId} = render(
+      <ServerCard
+        showDownArrow
+        onDownClick={onDownClickMock}
+        name='Test Server'
+        address='test.server.com'
+        status={{}}
+        onFocus={noop}
+        onBlur={noop}
+        tabIndex={1}
+        index={0}
+      />,
+    );
+
+    const card = getByTestId('server-card');
+    let downButton = getByTestId('down-button');
+    fireEvent.mouseEnter(card);
+    expect(setSetShouldShowArrows).toBeCalledWith(true);
+    expect(downButton).toBeInTheDocument();
+    fireEvent.click(downButton);
+    expect(onDownClickMock).toBeCalledWith(0);
+
+    // TODO: Finish writting this test
+    expect(container).toMatchSnapshot();
+  });
+
+  test.todo('add more tests');
 });

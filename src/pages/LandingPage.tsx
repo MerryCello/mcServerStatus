@@ -1,11 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
-import '../App.css';
+import {isNil} from 'lodash';
+import {List} from 'react-movable';
 import request from 'superagent';
+import {useLongPress} from 'use-long-press';
+import '../App.css';
 import {Button, Loading, ServerCard} from '../components';
-import {getUserServers} from '../firebase/controlers';
+import {getUserServers, moveUserServer} from '../firebase/controlers';
 import {ServerData} from '../firebase/types';
 import {ServerStatus} from '../types';
-import {isNil} from 'lodash';
+import {useWindowDimensions} from '../hooks';
+import {ServerCardProps} from '../components/ServerCard/types';
+import {moveItemInArray} from '../utils';
 
 const loadingObj: ServerStatus = {loading: true};
 const EDIT = 'Edit';
@@ -24,8 +29,15 @@ const LandingPage = () => {
   const deleteRef = useRef(null);
   const [editDisabled, setEditDisabled] = useState(true);
   const [deleteDisabled, setDeleteDisabled] = useState(true);
+  const [enableServersDnd, setEnableServersDnd] = useState(false);
   const addServerRef = useRef(null);
   const refreshRef = useRef(null);
+  const {width} = useWindowDimensions();
+  const isMobileOrTablet = width < 500;
+  const disableList = !isMobileOrTablet || !enableServersDnd;
+  const getLongPressProps = useLongPress(() => setEnableServersDnd(true), {
+    threshold: 500,
+  });
 
   useEffect(() => {
     getUserServers().then((serversResponse) => {
@@ -38,26 +50,28 @@ const LandingPage = () => {
     });
   }, []);
 
-  const serverCardSelect = (index: any) => {
+  const serverCardSelect = (index: number) => {
     setEditDisabled(false);
     setDeleteDisabled(false);
     setSrvSelIndex(index);
   };
+  const onCardDrag = (params: {index?: number; newIndex?: number}) => {
+    const index = params.index ?? params.newIndex;
+    if (!disableList && !isNil(index) && index >= 0) {
+      serverCardSelect(index);
+    }
+  };
 
-  const serverCardOnBlur = (event: any) => {
+  const disableServersDnd = () => setEnableServersDnd(false);
+  const serverCardOnBlur: ServerCardProps['onBlur'] = (event) => {
     const element = event?.relatedTarget ?? event?.target;
     const elementText = element?.innerHTML;
     // TODO: find better solution than this
-    if (
-      !(
-        elementText === EDIT ||
-        elementText === DELETE ||
-        element?.classList?.contains('card-grid')
-      )
-    ) {
+    if (!(elementText === EDIT || elementText === DELETE)) {
       setSrvSelIndex(null);
       setEditDisabled(true);
       setDeleteDisabled(true);
+      disableServersDnd();
     }
   };
 
@@ -112,26 +126,77 @@ const LandingPage = () => {
     }
   };
 
-  const renderServerCards = () =>
-    servers.map(({name, address, status}, i) => (
-      <ServerCard
-        onFocus={serverCardSelect}
-        onBlur={serverCardOnBlur}
-        key={i}
-        tabIndex={i + 1}
-        index={i}
-        style={{marginBottom: '8px'}}
-        name={name}
-        address={address}
-        status={status}
-      />
-    ));
+  const renderServersList: List<Server>['props']['renderList'] = ({
+    children,
+    props,
+  }) => (
+    <div {...props} className='servers-list'>
+      {servers.length === 0 ? (
+        <Loading servers={servers} setServers={setServers} />
+      ) : (
+        children
+      )}
+    </div>
+  );
 
-  const renderServersList = () => {
-    if (servers.length === 0) {
-      return <Loading servers={servers} setServers={setServers} />;
-    }
-    return renderServerCards();
+  const onServerListChange: List<Server>['props']['onChange'] = ({
+    oldIndex,
+    newIndex,
+  }) => {
+    setServers((prevServers) =>
+      moveItemInArray(prevServers, oldIndex, newIndex),
+    );
+    moveUserServer(oldIndex, newIndex).catch(console.error);
+    disableServersDnd();
+  };
+  const moveServerUp = (oldIndex: number) => {
+    // @ts-ignore - don't need targetRect property
+    onServerListChange({
+      oldIndex,
+      newIndex: oldIndex - 1 < 0 ? 0 : oldIndex - 1,
+    });
+  };
+  const moveServerDown = (oldIndex: number) => {
+    // @ts-ignore - don't need targetRect property
+    onServerListChange({
+      oldIndex,
+      newIndex:
+        oldIndex + 1 >= servers.length ? servers.length - 1 : oldIndex + 1,
+    });
+  };
+
+  const renderServerCard: List<Server>['props']['renderItem'] = ({
+    value,
+    props,
+    index = servers.findIndex((srv) => srv.id === value.id),
+  }) => {
+    const {name, address, status} = value;
+    const isNotFirstCard = index !== 0;
+    const isNotLastCard = index !== servers.length - 1;
+    return (
+      <div
+        key={index}
+        id={`server-card-${index}`}
+        {...props}
+        {...getLongPressProps()}>
+        <ServerCard
+          onFocus={serverCardSelect}
+          onBlur={serverCardOnBlur}
+          tabIndex={index + 1}
+          index={index}
+          style={{marginBottom: '8px'}}
+          name={name}
+          address={address}
+          status={status}
+          showUpArrow={isNotFirstCard}
+          showDownArrow={isNotLastCard}
+          onUpClick={moveServerUp}
+          onDownClick={moveServerDown}
+          isSelected={index === srvSelIndex}
+          isDraggable={enableServersDnd}
+        />
+      </div>
+    );
   };
 
   const refreshServers = () => {
@@ -151,10 +216,21 @@ const LandingPage = () => {
   };
 
   return (
-    <div className='main-container landing-container'>
+    <div
+      className='main-container landing-container'
+      onClick={disableServersDnd}>
       <h1>Server Status</h1>
       <div className='servers-list-bg'>
-        <div className='servers-list'>{renderServersList()}</div>
+        <List
+          disabled={disableList}
+          values={servers}
+          onChange={onServerListChange}
+          renderList={renderServersList}
+          renderItem={renderServerCard}
+          beforeDrag={onCardDrag}
+          afterDrag={onCardDrag}
+          lockVertically
+        />
       </div>
       <div className='options'>
         <Button

@@ -1,21 +1,10 @@
-import React, {CSSProperties, FC, FocusEventHandler, useState} from 'react';
+import React, {FC, FocusEventHandler, useEffect, useState} from 'react';
 import parse from 'html-react-parser';
 import Signal from '../Signal';
 import serverDefaultIcon from '../../images/serverDefaultIcon.png';
 import {useWindowDimensions} from '../../hooks';
-import {ServerStatus} from '../../types';
-
-type ServerCardProps = {
-  name: string;
-  address: string;
-  status: ServerStatus;
-  style?: CSSProperties;
-  onFocus: (index: number) => void;
-  onBlur: FocusEventHandler<HTMLDivElement>;
-  onClick?: (index: number) => void;
-  tabIndex: number;
-  index: number;
-};
+import {ARROWS, ARROWS_SELECTED, getAttribute} from './utils';
+import {ServerCardProps, OnMouseEnter, OnMouseLeave} from './types';
 
 const ServerCard: FC<ServerCardProps> = ({
   name,
@@ -25,17 +14,43 @@ const ServerCard: FC<ServerCardProps> = ({
   onFocus,
   onBlur,
   onClick,
+  showUpArrow,
+  showDownArrow,
+  onUpClick,
+  onDownClick,
   tabIndex,
   index,
+  isSelected: isSelectedProp,
+  isDraggable,
 }) => {
-  const [isSelected, setIsSelected] = useState(false);
-  const icon = status?.icon;
-  const motd = status?.motd;
-  const playersOnline = status?.players?.online;
-  const maxPlayers = status?.players?.max;
+  const {icon, motd, players} = status ?? {};
+  const playersOnline = players?.online;
+  const maxPlayers = players?.max;
 
   const {width} = useWindowDimensions();
   const isMobileOrTablet = width < 500;
+  const [isSelected, setIsSelected] = useState(isSelectedProp);
+  const [shouldShowArrows, setShouldShowArrows] = useState(false);
+
+  useEffect(() => {
+    setIsSelected(isSelectedProp);
+  }, [isSelectedProp]);
+
+  const showArrows = () =>
+    setShouldShowArrows(
+      !isMobileOrTablet && (!!showUpArrow || !!showDownArrow),
+    );
+  const hideArrows = () => setShouldShowArrows(false);
+
+  const onArrowMouseEnter: OnMouseEnter = (e) => {
+    e.currentTarget.src = ARROWS_SELECTED[getAttribute(e, 'data-testid')];
+  };
+  const onArrowMouseLeave: OnMouseLeave = (e) => {
+    e.currentTarget.src = ARROWS[getAttribute(e, 'data-testid')];
+  };
+
+  const onUpButtonClick = () => onUpClick?.(index);
+  const onDownButtonClick = () => onDownClick?.(index);
 
   const cardOnClick = () => {
     setIsSelected(true);
@@ -58,18 +73,54 @@ const ServerCard: FC<ServerCardProps> = ({
       data-testid='server-card'
       className={'card-grid' + (isSelected ? ' card-selected' : '')}
       style={style}
-      onFocus={cardOnFocus}
       onBlur={cardOnBlur}
       onClick={cardOnClick}
+      onFocus={cardOnFocus}
+      onMouseEnter={showArrows}
+      onMouseLeave={hideArrows}
       tabIndex={tabIndex}>
       <div className='card-icon'>
+        {(shouldShowArrows || (isMobileOrTablet && isDraggable)) && (
+          <div data-test-id='arrows' className='server-card-arrows-container'>
+            <div>
+              <img
+                data-testid='up-button'
+                src={ARROWS['up-button']}
+                className={showUpArrow ? '' : 'hidden-arrow'}
+                onMouseEnter={onArrowMouseEnter}
+                onMouseLeave={onArrowMouseLeave}
+                onClick={showUpArrow ? onUpButtonClick : undefined}
+                alt='button to move the server card up'
+              />
+              <img
+                data-testid='down-button'
+                src={ARROWS['down-button']}
+                className={showDownArrow ? '' : 'hidden-arrow'}
+                onMouseEnter={onArrowMouseEnter}
+                onMouseLeave={onArrowMouseLeave}
+                onClick={showDownArrow ? onDownButtonClick : undefined}
+                alt='button to move the server card down'
+              />
+            </div>
+            {!isMobileOrTablet && (
+              <img
+                data-testid='play-button'
+                className='hidden-arrow'
+                src={ARROWS['play-button']}
+                onMouseEnter={onArrowMouseEnter}
+                onMouseLeave={onArrowMouseLeave}
+                alt=''
+              />
+            )}
+          </div>
+        )}
         <img
           data-testid='server-icon'
           src={icon ? icon : serverDefaultIcon}
           alt='icon for server'
         />
       </div>
-      <div className='server-details'>
+      <div data-testid='server-details' className='server-details'>
         <div className='text-left'>
           <div className='card-srv-name-status'>
             <span data-testid='server-card-title' title={address}>
