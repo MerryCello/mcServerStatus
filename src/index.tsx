@@ -15,7 +15,12 @@ const router = createBrowserRouter([
     errorElement: <NotFound404 />,
   },
   {
-    path: "/mcServerStatus",
+    path: '/mcServerStatus',
+    element: <App />,
+    errorElement: <NotFound404 />,
+  },
+  {
+    path: '/mcServerStatus/list/:sharedListId',
     element: <App />,
     errorElement: <NotFound404 />,
   },

@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotFound404 renders 404 message 1`] = `
+<div>
+  <div
+    class="main-container delete-page-container column"
+  >
+    <p>
+      404: Not Found
+    </p>
+    <p
+      class="m-0"
+    >
+      ~~~~~~~~~~~~~~~~~~~
+    </p>
+    <p>
+      The page you were looking for is in another realm
+    </p>
+  </div>
+</div>
+`;

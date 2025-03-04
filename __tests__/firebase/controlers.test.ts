@@ -1,5 +1,14 @@
 import {auth} from '../../src/firebase/config';
-import {doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import {onAuthStateChanged, signInAnonymously} from 'firebase/auth';
 import {v4 as uuidV4} from 'uuid';
 import * as c from '../../src/firebase/controlers';
@@ -609,6 +618,214 @@ describe('Firebase Controllers', () => {
       );
 
       expect(mockFetchRandomInts).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getUserSharedListsIds', () => {
+    it('should return shared list IDs for authenticated user', async () => {
+      const mockUserInfo = {id: 'user123'};
+      const mockQuerySnapshot = {
+        docs: [{id: 'sharedList1'}, {id: 'sharedList2'}],
+      };
+      const mockGetUserInfo = jest.fn().mockResolvedValueOnce(mockUserInfo);
+      const mockSignIn = jest.fn().mockResolvedValueOnce(true);
+      (getDocs as jest.Mock).mockResolvedValueOnce(mockQuerySnapshot);
+
+      const result = await c.getUserSharedListsIds(mockGetUserInfo, mockSignIn);
+
+      expect(mockGetUserInfo).toHaveBeenCalled();
+      expect(getDocs).toHaveBeenCalledWith(
+        query(
+          collection(expect.anything(), 'sharedServers'),
+          where('ownersUids', 'array-contains', mockUserInfo.id),
+        ),
+      );
+      expect(result).toEqual(['sharedList1', 'sharedList2']);
+    });
+
+    it('should return an empty array if user has no shared lists', async () => {
+      const mockUserInfo = {id: 'user123'};
+      const mockQuerySnapshot = {docs: []};
+      const mockGetUserInfo = jest
+        .fn()
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce(mockUserInfo);
+      const mockSignIn = jest.fn().mockResolvedValueOnce(true);
+      (getDocs as jest.Mock).mockResolvedValueOnce(mockQuerySnapshot);
+
+      const result = await c.getUserSharedListsIds(mockGetUserInfo, mockSignIn);
+
+      expect(mockGetUserInfo).toHaveBeenCalledTimes(2);
+      expect(getDocs).toHaveBeenCalledWith(
+        query(
+          collection(expect.anything(), 'sharedServers'),
+          where('ownersUids', 'array-contains', mockUserInfo.id),
+        ),
+      );
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array if unable to get user info', async () => {
+      const mockGetUserInfo = jest.fn().mockResolvedValueOnce(undefined);
+      const mockSignIn = jest.fn().mockResolvedValueOnce(false);
+
+      const list = await c.getUserSharedListsIds(mockGetUserInfo, mockSignIn);
+
+      expect(list).toEqual([]);
+      expect(mockGetUserInfo).toHaveBeenCalled();
+      expect(getDocs).not.toHaveBeenCalled();
+    });
+
+    it('should handle firestore query error', async () => {
+      const mockUserInfo = {id: 'user123'};
+      const mockGetUserInfo = jest.fn().mockResolvedValueOnce(mockUserInfo);
+      const mockSignIn = jest.fn().mockResolvedValueOnce(true);
+      (getDocs as jest.Mock).mockRejectedValueOnce(new Error('query error'));
+
+      await expect(
+        c.getUserSharedListsIds(mockGetUserInfo, mockSignIn),
+      ).rejects.toThrow('query error');
+
+      expect(mockGetUserInfo).toHaveBeenCalled();
+      expect(getDocs).toHaveBeenCalledWith(
+        query(
+          collection(expect.anything(), 'sharedServers'),
+          where('ownersUids', 'array-contains', mockUserInfo.id),
+        ),
+      );
+    });
+  });
+  describe('hasReachedSharedListLimit', () => {
+    it('should return true if the list length is greater than or equal to the limit', () => {
+      expect(c.hasReachedSharedListLimit(['list1'])).toBe(true);
+      expect(c.hasReachedSharedListLimit(['list1', 'list2'])).toBe(true);
+    });
+
+    it('should return false if the list length is less than the limit', () => {
+      expect(c.hasReachedSharedListLimit([])).toBe(false);
+    });
+
+    it('should return false if the list is null or undefined', () => {
+      expect(c.hasReachedSharedListLimit(null)).toBe(false);
+      // @ts-expect-error
+      expect(c.hasReachedSharedListLimit(undefined)).toBe(false);
+    });
+  });
+  describe('reachedSharedListLimit', () => {
+    it('should return true if the user has reached the shared list limit', async () => {
+      const mockGetUserSharedListsIds = jest.fn().mockResolvedValue(['list1']);
+      const result = await c.reachedSharedListLimit(mockGetUserSharedListsIds);
+      expect(mockGetUserSharedListsIds).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should return false if the user has not reached the shared list limit', async () => {
+      const mockGetUserSharedListsIds = jest.fn().mockResolvedValue([]);
+      const result = await c.reachedSharedListLimit(mockGetUserSharedListsIds);
+      expect(mockGetUserSharedListsIds).toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+
+    it('should return false if the user has no shared lists', async () => {
+      const mockGetUserSharedListsIds = jest.fn().mockResolvedValue(null);
+      const result = await c.reachedSharedListLimit(mockGetUserSharedListsIds);
+      expect(mockGetUserSharedListsIds).toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+
+    it('should handle errors thrown by getUserSharedListsIds', async () => {
+      const mockGetUserSharedListsIds = jest
+        .fn()
+        .mockRejectedValue(new Error('error'));
+      await expect(
+        c.reachedSharedListLimit(mockGetUserSharedListsIds),
+      ).rejects.toThrow('error');
+      expect(mockGetUserSharedListsIds).toHaveBeenCalled();
+    });
+  });
+  describe('createSharedList', () => {
+    it('should create a new shared list and return the share ID', async () => {
+      const mockSharedListId = 'mockSharedListId';
+      const mockUserServersWithAuth = {
+        docUid: 'user123',
+        servers: [{id: 'server1', name: 'Server 1'}],
+      };
+      const mockReachedSharedListLimit = jest.fn().mockResolvedValue(false);
+      const mockGenerateShareUid = jest
+        .fn()
+        .mockResolvedValue(mockSharedListId);
+      const mockGetUserServersWithAuth = jest
+        .fn()
+        .mockResolvedValue(mockUserServersWithAuth);
+      (getDoc as jest.Mock).mockResolvedValue({
+        exists: jest.fn().mockReturnValue(false),
+      });
+      (setDoc as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await c.createSharedList(
+        mockReachedSharedListLimit,
+        mockGenerateShareUid,
+        mockGetUserServersWithAuth,
+      );
+
+      expect(mockReachedSharedListLimit).toHaveBeenCalled();
+      expect(mockGenerateShareUid).toHaveBeenCalled();
+      expect(mockGetUserServersWithAuth).toHaveBeenCalled();
+      expect(setDoc).toHaveBeenCalledWith(
+        doc(expect.anything(), 'sharedServers', mockSharedListId),
+        {
+          name: '1',
+          ownersUids: [mockUserServersWithAuth.docUid],
+          servers: mockUserServersWithAuth.servers,
+        },
+      );
+      expect(result).toBe(mockSharedListId);
+    });
+
+    it('should throw an error if the user has reached the shared list limit', async () => {
+      const mockReachedSharedListLimit = jest.fn().mockResolvedValue(true);
+
+      await expect(
+        c.createSharedList(mockReachedSharedListLimit),
+      ).rejects.toEqual('MAX_SHARED_LISTS_REACHED');
+
+      expect(mockReachedSharedListLimit).toHaveBeenCalled();
+    });
+
+    it('should throw an error if generating share UID fails', async () => {
+      const mockReachedSharedListLimit = jest.fn().mockResolvedValue(false);
+      const mockGenerateShareUid = jest
+        .fn()
+        .mockRejectedValue(new Error('UID generation error'));
+
+      await expect(
+        c.createSharedList(mockReachedSharedListLimit, mockGenerateShareUid),
+      ).rejects.toThrow('UID generation error');
+
+      expect(mockReachedSharedListLimit).toHaveBeenCalled();
+      expect(mockGenerateShareUid).toHaveBeenCalled();
+    });
+
+    it('should throw an error if getUserServersWithAuth fails', async () => {
+      const mockReachedSharedListLimit = jest.fn().mockResolvedValue(false);
+      const mockGenerateShareUid = jest
+        .fn()
+        .mockResolvedValue('mockSharedListId');
+      const mockGetUserServersWithAuth = jest
+        .fn()
+        .mockRejectedValue(new Error('getUserServersWithAuth error'));
+
+      await expect(
+        c.createSharedList(
+          mockReachedSharedListLimit,
+          mockGenerateShareUid,
+          mockGetUserServersWithAuth,
+        ),
+      ).rejects.toThrow('getUserServersWithAuth error');
+
+      expect(mockReachedSharedListLimit).toHaveBeenCalled();
+      expect(mockGenerateShareUid).toHaveBeenCalled();
+      expect(mockGetUserServersWithAuth).toHaveBeenCalled();
     });
   });
 });

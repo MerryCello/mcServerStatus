@@ -2,7 +2,7 @@
 import React, {useState} from 'react';
 import {fireEvent, render} from '@testing-library/react';
 import {noop} from 'lodash';
-import ServerCard from '../../src/components/ServerCard';
+import {ServerCard} from '../../src/components/ServerCard';
 import {useWindowDimensions} from '../../src/hooks';
 
 jest.mock('../../src/hooks/useWindowDimensions');

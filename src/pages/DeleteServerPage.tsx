@@ -4,27 +4,35 @@ import Button from '../components/Button';
 import {deleteUserServer} from '../firebase/controlers';
 import {useButtonNavigate} from '../hooks';
 
+export type DeleteRouteLocation = {
+  state: {
+    listId?: string;
+    id?: string;
+    name?: string;
+  };
+};
+
 const DeleteServerPage: FC = () => {
-  const {state: routeParam} = useLocation();
+  const {state: routeParams}: DeleteRouteLocation = useLocation();
   const navigate = useButtonNavigate();
 
-  const navigateHome = () => navigate('/mcServerStatus');
+  const goBack = () => navigate(-1);
 
   const deleteOnClick = () => {
-    deleteUserServer(routeParam?.id).then(navigateHome);
+    deleteUserServer(routeParams?.id, routeParams?.listId).then(goBack);
   };
 
   return (
     <div className='main-container delete-page-container column'>
       <p>Are you sure you want to remove this server?</p>
       <p>{`\`${
-        routeParam?.name ?? ''
+        routeParams?.name ?? ''
       }' will be lost forever! (A long time!)`}</p>
       <div className='buttons row'>
         <Button onClick={deleteOnClick} style={{flex: 1, marginRight: '35px'}}>
           Delete
         </Button>
-        <Button onClick={navigateHome} style={{flex: 1}}>
+        <Button onClick={goBack} style={{flex: 1}}>
           Cancel
         </Button>
       </div>

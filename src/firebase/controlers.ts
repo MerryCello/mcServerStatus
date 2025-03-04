@@ -3,16 +3,26 @@
  * Also has firebase util functions.
  */
 
-import {doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import {auth, db} from './config';
 import {onAuthStateChanged, signInAnonymously} from 'firebase/auth';
 import {isNil, isNumber, noop, omit} from 'lodash';
 import {v4 as uuidV4} from 'uuid';
-import {ServerData} from './types';
+import {ServerData, SharedList, UserServers} from './types';
 import {indexIsOutOfBounds, moveItemInArray} from '../utils';
 
 const USER_SERVERS_COL = 'userServers';
 const SHARED_SERVERS_COL = 'sharedServers';
+const MAX_SHARED_LISTS = 1;
 
 // ========================== GET SERVERS ========================== //
 /**
@@ -46,9 +56,85 @@ export const getUserServers = async (
     throw 'SHARE_ID_NOT_FOUND';
   } else {
     //  initial user servers
-    setDoc(docRef, {servers: []});
+    setDoc(docRef, {servers: []} satisfies UserServers);
     return [];
   }
+};
+
+/**
+ * Get all the shared servers
+ * @returns list of shared servers
+ */
+export const getUserSharedListsIds = async (
+  getUserInfoLocal = getUserInfo,
+  signInLocal = signIn,
+): Promise<string[]> => {
+  let userID = (await getUserInfoLocal())?.id;
+  if (!userID) {
+    if (await signInLocal()) {
+      userID = (await getUserInfoLocal())?.id;
+    } else {
+      return [];
+    }
+  }
+  // get all shared lists owned by this user where ownersUid includes docUid
+  const querySnapshot = await getDocs(
+    query(
+      collection(db, SHARED_SERVERS_COL),
+      where('ownersUids', 'array-contains', userID),
+    ),
+  );
+
+  return querySnapshot.docs.map((doc) => doc.id);
+};
+
+/**
+ * Check if the user exceeded the limit of shared lists based on the shared list ownersUids array
+ * @param {string[]} list
+ * @returns
+ */
+export const hasReachedSharedListLimit = (list: string[] | null) =>
+  (list?.length ?? 0) >= MAX_SHARED_LISTS;
+/**
+ * Check if the user exceeded the limit of shared lists based on the shared list ownersUids array
+ */
+export const reachedSharedListLimit = async (
+  getUserSharedListsIdsLocal = getUserSharedListsIds,
+): Promise<boolean> =>
+  hasReachedSharedListLimit(await getUserSharedListsIdsLocal());
+
+/**
+ * Get all the shared servers
+ * @returns the shareId for the newly created shared list
+ */
+export const createSharedList = async (
+  reachedSharedListLimitLocal = reachedSharedListLimit,
+  generateShareUidLocal = generateShareUid,
+  getUserServersWithAuthLocal = getUserServersWithAuth,
+): Promise<string> => {
+  // get all shared lists owned by this user where ownersUid includes docUid
+  if (await reachedSharedListLimitLocal()) {
+    throw 'MAX_SHARED_LISTS_REACHED';
+  }
+
+  let sharedListId: string = '';
+  sharedListId = await generateShareUidLocal();
+
+  const {docUid: userID, servers: privateServers} =
+    await getUserServersWithAuthLocal();
+
+  const docRef = doc(db, SHARED_SERVERS_COL, sharedListId);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    setDoc(docRef, {
+      name: '1',
+      ownersUids: [userID!],
+      servers: privateServers,
+    } satisfies SharedList);
+  }
+
+  return sharedListId;
 };
 
 /**
@@ -67,9 +153,11 @@ export const getUserServersWithAuth = async (
     }
     docUid = (await getUserInfoLocal())?.id;
   }
-  docUid = sharedListId ?? docUid;
 
-  return {servers: await getUserServersLocal(docUid), docUid};
+  return {
+    servers: await getUserServersLocal(sharedListId),
+    docUid: sharedListId ?? docUid,
+  };
 };
 
 /**
@@ -101,7 +189,12 @@ export const addUserServer = async (
     servers.splice(index, 0, data);
   }
 
-  return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {servers});
+  return updateDoc(
+    doc(db, sharedListId ? SHARED_SERVERS_COL : USER_SERVERS_COL, docUid!),
+    {
+      servers,
+    } satisfies UserServers,
+  );
 };
 
 /**
@@ -133,7 +226,12 @@ export const editUserServer = async (
   }
   servers[index] = {...servers[index], ...omit(data, ['id'])};
 
-  return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {servers});
+  return updateDoc(
+    doc(db, sharedListId ? SHARED_SERVERS_COL : USER_SERVERS_COL, docUid!),
+    {
+      servers,
+    } satisfies UserServers,
+  );
 };
 
 /**
@@ -162,16 +260,19 @@ export const moveUserServer = async (
     throw `moveUserServer: new index (${newIndex}) out of bounds`;
   }
 
-  return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {
-    servers: moveItemInArray(servers, oldIndex, newIndex),
-  });
+  return updateDoc(
+    doc(db, sharedListId ? SHARED_SERVERS_COL : USER_SERVERS_COL, docUid!),
+    {
+      servers: moveItemInArray(servers, oldIndex, newIndex),
+    } satisfies UserServers,
+  );
 };
 
 /**
  * @param id server ID
  */
 export const deleteUserServer = async (
-  id: string,
+  id: string | undefined,
   sharedListId?: string,
   getUserServersWithAuthLocal = getUserServersWithAuth,
 ): Promise<void> => {
@@ -184,7 +285,12 @@ export const deleteUserServer = async (
   }
   servers.splice(index, 1);
 
-  return updateDoc(doc(db, USER_SERVERS_COL, docUid!), {servers});
+  return updateDoc(
+    doc(db, sharedListId ? SHARED_SERVERS_COL : USER_SERVERS_COL, docUid!),
+    {
+      servers,
+    } satisfies UserServers,
+  );
 };
 
 // ========================== SHARE ID ========================== //
