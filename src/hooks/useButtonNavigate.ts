@@ -1,8 +1,8 @@
-import { NavigateOptions, To, useNavigate } from "react-router-dom";
+import {useNavigate} from 'react-router-dom';
 
-export const useButtonNavigate = () => {
+export const useButtonNavigate: typeof useNavigate = () => {
   const navigate = useNavigate();
-  return (linkTo: To, options?: NavigateOptions) => {
-    setTimeout(() => navigate(linkTo!, options), 100); // 100ms for Button sound fx to play
+  return (...params) => {
+    setTimeout(() => navigate(...(params as Parameters<typeof navigate>)), 100); // 100ms for Button sound fx to play
   };
 };

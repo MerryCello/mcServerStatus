@@ -12,7 +12,7 @@ type LoadingProps = {
 };
 
 export const Loading: FC<LoadingProps> = ({servers, setServers}) => {
-  const [noServersLoaderIndex, setNoServersLoaderIndex] = useState(0);
+  const [loadingStatesIndex, setLoadingStatesIndex] = useState(0);
   useEffect(() => {
     const interval = setLoadingInterval();
     return () => clearInterval(interval);
@@ -24,7 +24,7 @@ export const Loading: FC<LoadingProps> = ({servers, setServers}) => {
         // Have to use setState function to get the actual state of 'noServersLoader'
         // because 'noServersLoader' variable will not show the actual value in the
         // setInterval scope.
-        setNoServersLoaderIndex(
+        setLoadingStatesIndex(
           (prevState) => (prevState + 1) % LOADING_STATES.length,
         );
         // call set state just to get the actual state of 'servers'
@@ -45,7 +45,7 @@ export const Loading: FC<LoadingProps> = ({servers, setServers}) => {
         {'Scanning for games on your local network'}
       </h1>
       <h1 style={{color: '#7e7e7e', textShadow: 'none'}}>
-        {LOADING_STATES[noServersLoaderIndex]}
+        {LOADING_STATES[loadingStatesIndex]}
       </h1>
     </div>
   );

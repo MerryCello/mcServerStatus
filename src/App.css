@@ -194,6 +194,9 @@ span.card-srv-name-status {
   margin: 3% 18% 0 18%;
   gap: 15px;
 }
+.options.marginTop {
+  margin-top: 15px;
+}
 
 .landing-container {
   padding-top: 7vh;

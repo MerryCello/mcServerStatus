@@ -1,58 +1,92 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {isNil} from 'lodash';
+import {isEmpty, isNil} from 'lodash';
 import {List} from 'react-movable';
 import request from 'superagent';
 import {useLongPress} from 'use-long-press';
 import '../App.css';
 import {Button, Loading, ServerCard} from '../components';
-import {getUserServers, moveUserServer} from '../firebase/controlers';
+import {
+  createSharedList,
+  getUserServers,
+  getUserSharedListsIds,
+  hasReachedSharedListLimit,
+  moveUserServer,
+} from '../firebase/controlers';
 import {ServerData} from '../firebase/types';
 import {ServerStatus} from '../types';
 import {useWindowDimensions} from '../hooks';
 import {ServerCardProps} from '../components/ServerCard/types';
 import {moveItemInArray} from '../utils';
+import {useParams, useNavigate} from 'react-router-dom';
+import {EditRouteLocation} from './EditServerPage';
+import {DeleteRouteLocation} from './DeleteServerPage';
 
 const loadingObj: ServerStatus = {loading: true};
 const EDIT = 'Edit';
 const DELETE = 'Delete';
 const ADD_SERVER = 'Add Server';
 const REFRESH = 'Refresh';
+const SHARE = 'Share List';
 
 interface Server extends ServerData {
   status: ServerStatus;
 }
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+  const {sharedListId} = useParams<{sharedListId: string}>();
   const [servers, setServers] = useState<Server[]>([]);
   const [srvSelIndex, setSrvSelIndex] = useState<number | null>(null);
-  const editRef = useRef(null);
-  const deleteRef = useRef(null);
+  const editRef = useRef<HTMLDivElement>(null);
+  const deleteRef = useRef<HTMLDivElement>(null);
   const [editDisabled, setEditDisabled] = useState(true);
   const [deleteDisabled, setDeleteDisabled] = useState(true);
   const [enableServersDnd, setEnableServersDnd] = useState(false);
+  const [usersSharedListsIds, setUsersSharedListsIds] = useState<
+    string[] | null
+  >(null);
   const addServerRef = useRef(null);
   const refreshRef = useRef(null);
   const {width} = useWindowDimensions();
-  const isMobileOrTablet = width < 500;
+  const isMobileOrTablet = width < 500; // TODO: use better solution: https://stackoverflow.com/a/77654885/11264753
   const disableList = !isMobileOrTablet || !enableServersDnd;
   const getLongPressProps = useLongPress(() => setEnableServersDnd(true), {
     threshold: 500,
   });
+  const userOwnsSharedList = !!usersSharedListsIds?.includes(
+    sharedListId ?? '',
+  );
+  const userOwnsList = isNil(sharedListId) || userOwnsSharedList;
 
-  useEffect(() => {
-    getUserServers().then((serversResponse) => {
-      const serversWithLoading = serversResponse.map((server) => ({
-        ...server,
-        status: loadingObj,
-      }));
-      setServers(serversWithLoading);
-      updateServersStatus(serversWithLoading);
-    });
-  }, []);
+  useEffect(
+    function getServers() {
+      getUserServers(sharedListId)
+        .then((serversResponse) => {
+          const serversWithLoading = serversResponse.map((server) => ({
+            ...server,
+            status: loadingObj,
+          }));
+          setServers(serversWithLoading);
+          updateServersStatus(serversWithLoading);
+        })
+        .catch((error) => {
+          if (error === 'SHARE_ID_NOT_FOUND') {
+            navigate('/mcServerStatus', {replace: true});
+          } else {
+            console.error('failed getting servers list', error);
+          }
+        });
+
+      getUserSharedListsIds().then(setUsersSharedListsIds);
+    },
+    [sharedListId],
+  );
 
   const serverCardSelect = (index: number) => {
-    setEditDisabled(false);
-    setDeleteDisabled(false);
+    if (userOwnsList) {
+      setEditDisabled(false);
+      setDeleteDisabled(false);
+    }
     setSrvSelIndex(index);
   };
   const onCardDrag = (params: {index?: number; newIndex?: number}) => {
@@ -153,7 +187,7 @@ const LandingPage = () => {
     setServers((prevServers) =>
       moveItemInArray(prevServers, oldIndex, newIndex),
     );
-    moveUserServer(oldIndex, newIndex).catch(console.error);
+    moveUserServer(oldIndex, newIndex, sharedListId).catch(console.error);
     disableServersDnd();
   };
   const moveServerUp = (oldIndex: number) => {
@@ -195,8 +229,8 @@ const LandingPage = () => {
           name={name}
           address={address}
           status={status}
-          showUpArrow={isNotFirstCard}
-          showDownArrow={isNotLastCard}
+          showUpArrow={isNotFirstCard && userOwnsList}
+          showDownArrow={isNotLastCard && userOwnsList}
           onUpClick={moveServerUp}
           onDownClick={moveServerDown}
           isSelected={index === srvSelIndex}
@@ -222,14 +256,30 @@ const LandingPage = () => {
     updateServersStatus(serverRst);
   };
 
+  const createNewSharedList = async () => {
+    let newSharedListId = '';
+    try {
+      newSharedListId = await createSharedList();
+    } catch (error) {
+      if (error === 'MAX_SHARED_LISTS_REACHED') {
+        alert('You have reached the maximum number of shared lists');
+        return;
+      }
+      alert('Failed to create shared list');
+      console.error('failed creating shared list', error);
+      return;
+    }
+    navigate(`/mcServerStatus/list/${newSharedListId}`, {replace: true});
+  };
+
   return (
     <div
       className='main-container landing-container'
       onClick={disableServersDnd}>
-      <h1>Server Status</h1>
+      <h1>{`${sharedListId ? 'Shared ' : ''}Server Status`}</h1>
       <div className='servers-list-bg'>
         <List
-          disabled={disableList}
+          disabled={disableList || !userOwnsSharedList}
           values={servers}
           onChange={onServerListChange}
           renderList={renderServersList}
@@ -240,44 +290,94 @@ const LandingPage = () => {
         />
       </div>
       <div className='options'>
+        {/******* EDIT *******/}
         <Button
           ref={editRef}
           disabled={editDisabled}
           linkTo='/mcServerStatus/edit'
           state={
-            !isNil(srvSelIndex)
+            (!isNil(srvSelIndex)
               ? {
+                  listId: sharedListId,
                   id: servers[srvSelIndex]?.id,
                   name: servers[srvSelIndex]?.name,
                   address: servers[srvSelIndex]?.address,
                 }
-              : {}
+              : {}) satisfies EditRouteLocation['state']
           }>
           {EDIT}
         </Button>
+
+        {/******* DELETE *******/}
         <Button
           ref={deleteRef}
           disabled={deleteDisabled}
           linkTo='/mcServerStatus/delete'
           state={
-            !isNil(srvSelIndex)
+            (!isNil(srvSelIndex)
               ? {
                   id: servers[srvSelIndex]?.id,
                   name: servers[srvSelIndex]?.name,
+                  listId: sharedListId,
                 }
-              : {}
+              : {}) satisfies DeleteRouteLocation['state']
           }>
           {DELETE}
         </Button>
+
+        {/******* ADD *******/}
         <Button
           tabIndex={1000}
           ref={addServerRef}
-          linkTo={'/mcServerStatus/add'}>
+          disabled={!userOwnsList}
+          linkTo={'/mcServerStatus/add'}
+          state={{listId: sharedListId} satisfies EditRouteLocation['state']}>
           {ADD_SERVER}
         </Button>
-        <Button tabIndex={1001} ref={refreshRef} onClick={refreshServers}>
+
+        {/******* REFRESH *******/}
+        <Button
+          tabIndex={1001}
+          ref={refreshRef}
+          disabled={isEmpty(servers)}
+          onClick={refreshServers}>
           {REFRESH}
         </Button>
+      </div>
+
+      <div className='options marginTop'>
+        {/******* SHARE *******/}
+        {isNil(sharedListId) &&
+          !hasReachedSharedListLimit(usersSharedListsIds) && (
+            <Button
+              tabIndex={1002}
+              ref={refreshRef}
+              onClick={createNewSharedList}>
+              {SHARE}
+            </Button>
+          )}
+
+        {/******* VIEW SHARED LIST *******/}
+        {isNil(sharedListId) && usersSharedListsIds?.[0] && (
+          <Button
+            tabIndex={1003}
+            onClick={() =>
+              navigate(`/mcServerStatus/list/${usersSharedListsIds[0]}`, {
+                replace: true,
+              })
+            }>
+            {'View Shared List'}
+          </Button>
+        )}
+
+        {/******* VIEW PRIVATE LIST *******/}
+        {sharedListId && (
+          <Button
+            tabIndex={1004}
+            onClick={() => navigate('/mcServerStatus', {replace: true})}>
+            {`View ${userOwnsSharedList ? 'Private' : 'My'} List`}
+          </Button>
+        )}
       </div>
     </div>
   );

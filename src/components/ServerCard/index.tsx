@@ -1,4 +1,10 @@
-import React, {FC, FocusEventHandler, useEffect, useState} from 'react';
+import React, {
+  FocusEventHandler,
+  forwardRef,
+  ForwardRefRenderFunction,
+  useEffect,
+  useState,
+} from 'react';
 import parse from 'html-react-parser';
 import Signal from '../Signal';
 import serverDefaultIcon from '../../images/serverDefaultIcon.png';
@@ -6,23 +12,26 @@ import {useWindowDimensions} from '../../hooks';
 import {ARROWS, ARROWS_SELECTED, getAttribute} from './utils';
 import {ServerCardProps, OnMouseEnter, OnMouseLeave} from './types';
 
-const ServerCard: FC<ServerCardProps> = ({
-  name,
-  address,
-  status,
-  style,
-  onFocus,
-  onBlur,
-  onClick,
-  showUpArrow,
-  showDownArrow,
-  onUpClick,
-  onDownClick,
-  tabIndex,
-  index,
-  isSelected: isSelectedProp,
-  isDraggable,
-}) => {
+const ServerCardFC: ForwardRefRenderFunction<any, ServerCardProps> = (
+  {
+    name,
+    address,
+    status,
+    style,
+    onFocus,
+    onBlur,
+    onClick,
+    showUpArrow,
+    showDownArrow,
+    onUpClick,
+    onDownClick,
+    tabIndex,
+    index,
+    isSelected: isSelectedProp,
+    isDraggable,
+  },
+  ref,
+) => {
   const {icon, motd, players} = status ?? {};
   const playersOnline = players?.online;
   const maxPlayers = players?.max;
@@ -70,6 +79,7 @@ const ServerCard: FC<ServerCardProps> = ({
   return (
     // TODO: put inline styles in CSS file
     <div
+      ref={ref}
       data-testid='server-card'
       className={'card-grid' + (isSelected ? ' card-selected' : '')}
       style={style}
@@ -200,5 +210,4 @@ const ServerCard: FC<ServerCardProps> = ({
   );
 };
 
-export default ServerCard;
-export {ServerCard};
+export const ServerCard = forwardRef<any, ServerCardProps>(ServerCardFC);

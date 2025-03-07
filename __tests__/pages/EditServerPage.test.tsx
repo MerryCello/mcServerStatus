@@ -80,8 +80,12 @@ describe('EditServerPage', () => {
 
     const doneButton = getByTestId('done-button');
     fireEvent.click(doneButton);
-    expect(editUserServer).toHaveBeenCalledWith(editedServer);
-    expect(mockNavigate).toBeCalledWith('/mcServerStatus');
+    expect(editUserServer).toHaveBeenCalledWith(
+      editedServer,
+      undefined,
+      undefined,
+    );
+    expect(mockNavigate).toBeCalledWith(-1);
   });
 
   it('should navigate back with no changes made when done button is clicked', () => {
@@ -103,10 +107,92 @@ describe('EditServerPage', () => {
     const doneButton = getByTestId('done-button');
     fireEvent.click(doneButton);
     expect(editUserServer).not.toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith('/mcServerStatus');
+    expect(mockNavigate).toHaveBeenCalledWith(-1);
   });
 
-  test.todo('should render to add a new server');
-  test.todo('should place default server name when input name is blank');
-  test.todo('should navigate to the landing when cancel is pressed');
+  it('should render to add a new server', () => {
+    const mockSetNameState = jest.fn();
+    const mockSetAddressState = jest.fn();
+    (useLocation as jest.Mock).mockReturnValueOnce({state: {}});
+    (useState as jest.Mock)
+      .mockReturnValueOnce(['', mockSetNameState])
+      .mockReturnValueOnce(['', mockSetAddressState]);
+
+    const {container, getByTestId} = render(<EditServerPage />);
+
+    expect(getByTestId('page-title')).toBeDefined();
+
+    // name
+    expect(getByTestId('name-label')).toBeDefined();
+    const nameInput = getByTestId('name-input');
+    expect(nameInput).toHaveAttribute('value', '');
+    fireEvent.change(nameInput, {target: {value: 'New Server'}});
+    expect(mockSetNameState).toHaveBeenCalledWith('New Server');
+
+    // address
+    expect(getByTestId('address-label')).toBeDefined();
+    const addressInput = getByTestId('address-input');
+    expect(addressInput).toHaveAttribute('value', '');
+    fireEvent.change(addressInput, {target: {value: '123.123.123.123'}});
+    expect(mockSetAddressState).toHaveBeenCalledWith('123.123.123.123');
+
+    expect(container).toMatchSnapshot();
+  });
+
+  it('should send the sharedListId when editing a server for a shared list', () => {
+    const mockNavigate = jest.fn();
+    const mockSetNameState = jest.fn();
+    const mockSetAddressState = jest.fn();
+    const sharedListId = 'shared-list-id';
+
+    (useLocation as jest.Mock).mockReturnValueOnce({
+      state: {...serverToEdit, listId: sharedListId},
+    });
+    (useButtonNavigate as jest.Mock).mockReturnValueOnce(mockNavigate);
+    (useState as jest.Mock)
+      .mockReturnValueOnce([editedServer.name, mockSetNameState])
+      .mockReturnValueOnce([editedServer.address, mockSetAddressState]);
+    (editUserServer as jest.Mock).mockImplementationOnce(() => ({
+      then: (fn) => fn(),
+    }));
+
+    const {getByTestId} = render(<EditServerPage />);
+
+    const doneButton = getByTestId('done-button');
+    fireEvent.click(doneButton);
+    expect(editUserServer).toHaveBeenCalledWith(
+      editedServer,
+      undefined,
+      sharedListId,
+    );
+    expect(mockNavigate).toBeCalledWith(-1);
+  });
+
+  it('should place default server name when input name is blank', () => {
+    const mockSetNameState = jest.fn();
+    const mockSetAddressState = jest.fn();
+
+    (useLocation as jest.Mock).mockReturnValueOnce({state: {}});
+    (useState as jest.Mock)
+      .mockReturnValueOnce(['', mockSetNameState])
+      .mockReturnValueOnce(['', mockSetAddressState]);
+
+    const {getByTestId} = render(<EditServerPage />);
+
+    const nameInput = getByTestId('name-input');
+    fireEvent.blur(nameInput, {target: {value: ''}});
+    expect(mockSetNameState).toHaveBeenCalledWith('Minecraft Server');
+  });
+
+  it('should navigate back when cancel is pressed', () => {
+    const mockNavigate = jest.fn();
+    (useButtonNavigate as jest.Mock).mockReturnValueOnce(mockNavigate);
+    (useLocation as jest.Mock).mockReturnValueOnce({state: serverToEdit});
+
+    const {getByTestId} = render(<EditServerPage />);
+
+    const cancelButton = getByTestId('cancel-button');
+    fireEvent.click(cancelButton);
+    expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
 });

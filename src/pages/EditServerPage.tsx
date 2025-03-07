@@ -12,14 +12,22 @@ import {addUserServer, editUserServer} from '../firebase/controlers';
 import {useButtonNavigate} from '../hooks';
 
 export const NAME_PLACEHOLDER = 'Minecraft Server';
+export type EditRouteLocation = {
+  state: {
+    id?: string;
+    name?: string;
+    address?: string;
+    listId?: string;
+  };
+};
 
 const EditServerPage: FC = () => {
-  const {state: routeParam} = useLocation();
+  const {state: routeParams}: EditRouteLocation = useLocation();
   const navigate = useButtonNavigate();
   const [nameState, setNameState] = useState(
-    routeParam?.name ?? NAME_PLACEHOLDER,
+    routeParams?.name ?? NAME_PLACEHOLDER,
   );
-  const [addressState, setAddressState] = useState(routeParam?.address ?? '');
+  const [addressState, setAddressState] = useState(routeParams?.address ?? '');
   const doneRef = useRef<{disabled: boolean | null}>(null);
 
   useEffect(() => {
@@ -50,33 +58,46 @@ const EditServerPage: FC = () => {
     if (nameState === '') setNameState(NAME_PLACEHOLDER);
   };
 
+  const goBack = () => navigate(-1);
+
   const doneOnClick = () => {
     let resolution = Promise.resolve();
-    const aNewServerIsAdded = isNil(routeParam);
+    const aNewServerIsAdded =
+      isNil(routeParams?.name) &&
+      isNil(routeParams?.address) &&
+      isNil(routeParams?.id);
     const anInputFieldHasChanged =
-      routeParam?.address !== addressState || routeParam?.name !== nameState;
+      routeParams?.address !== addressState || routeParams?.name !== nameState;
 
     if (aNewServerIsAdded) {
-      resolution = addUserServer({
-        address: addressState,
-        name: nameState,
-      });
+      resolution = addUserServer(
+        {
+          address: addressState,
+          name: nameState,
+        },
+        undefined,
+        routeParams?.listId,
+      );
     } else if (anInputFieldHasChanged) {
-      resolution = editUserServer({
-        id: routeParam?.id,
-        address: addressState,
-        name: nameState,
-      });
+      resolution = editUserServer(
+        {
+          id: routeParams?.id,
+          address: addressState,
+          name: nameState,
+        },
+        undefined,
+        routeParams?.listId,
+      );
     }
-    resolution.then(() => navigate('/mcServerStatus'));
+    resolution.then(goBack);
   };
 
   return (
     <div className='main-container edit-page-container'>
-      <h1 data-testid='page-title'>Edit Server Info</h1>
+      <h1 data-testid='page-title'>{'Edit Server Info'}</h1>
       <div className='edit-form-container column'>
         <div className='inputs column'>
-          <label data-testid='name-label'>Server Name</label>
+          <label data-testid='name-label'>{'Server Name'}</label>
           <input
             data-testid='name-input'
             type={'text'}
@@ -86,7 +107,7 @@ const EditServerPage: FC = () => {
             onBlur={nameInputOnBlur}
             value={nameState}
           />
-          <label data-testid='address-label'>Server Address</label>
+          <label data-testid='address-label'>{'Server Address'}</label>
           <input
             data-testid='address-input'
             type={'text'}
@@ -101,13 +122,10 @@ const EditServerPage: FC = () => {
             onClick={doneOnClick}
             tabIndex={3}
             ref={doneRef}>
-            Done
+            {'Done'}
           </Button>
-          <Button
-            data-testid='cancel-button'
-            linkTo={'/mcServerStatus'}
-            tabIndex={4}>
-            Cancel
+          <Button data-testid='cancel-button' onClick={goBack} tabIndex={4}>
+            {'Cancel'}
           </Button>
         </div>
       </div>
