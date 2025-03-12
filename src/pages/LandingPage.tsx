@@ -272,6 +272,38 @@ const LandingPage = () => {
     navigate(`/mcServerStatus/list/${newSharedListId}`, {replace: true});
   };
 
+  let shareButton = null;
+  /******* SHARE *******/
+  if (isNil(sharedListId) && !hasReachedSharedListLimit(usersSharedListsIds)) {
+    shareButton = (
+      <Button tabIndex={1002} ref={refreshRef} onClick={createNewSharedList}>
+        {SHARE}
+      </Button>
+    );
+    /******* VIEW SHARED LIST *******/
+  } else if (isNil(sharedListId) && usersSharedListsIds?.[0]) {
+    shareButton = (
+      <Button
+        tabIndex={1003}
+        onClick={() =>
+          navigate(`/mcServerStatus/list/${usersSharedListsIds[0]}`, {
+            replace: true,
+          })
+        }>
+        {'View Shared List'}
+      </Button>
+    );
+    /******* VIEW PRIVATE LIST *******/
+  } else if (sharedListId) {
+    shareButton = (
+      <Button
+        tabIndex={1004}
+        onClick={() => navigate('/mcServerStatus', {replace: true})}>
+        {`View ${userOwnsSharedList ? 'Private' : 'My'} List`}
+      </Button>
+    );
+  }
+
   return (
     <div
       className='main-container landing-container'
@@ -345,40 +377,7 @@ const LandingPage = () => {
         </Button>
       </div>
 
-      <div className='options marginTop'>
-        {/******* SHARE *******/}
-        {isNil(sharedListId) &&
-          !hasReachedSharedListLimit(usersSharedListsIds) && (
-            <Button
-              tabIndex={1002}
-              ref={refreshRef}
-              onClick={createNewSharedList}>
-              {SHARE}
-            </Button>
-          )}
-
-        {/******* VIEW SHARED LIST *******/}
-        {isNil(sharedListId) && usersSharedListsIds?.[0] && (
-          <Button
-            tabIndex={1003}
-            onClick={() =>
-              navigate(`/mcServerStatus/list/${usersSharedListsIds[0]}`, {
-                replace: true,
-              })
-            }>
-            {'View Shared List'}
-          </Button>
-        )}
-
-        {/******* VIEW PRIVATE LIST *******/}
-        {sharedListId && (
-          <Button
-            tabIndex={1004}
-            onClick={() => navigate('/mcServerStatus', {replace: true})}>
-            {`View ${userOwnsSharedList ? 'Private' : 'My'} List`}
-          </Button>
-        )}
-      </div>
+      <div className='options shareButtons'>{shareButton}</div>
     </div>
   );
 };

@@ -194,8 +194,9 @@ span.card-srv-name-status {
   margin: 3% 18% 0 18%;
   gap: 15px;
 }
-.options.marginTop {
+.options.shareButtons {
   margin-top: 15px;
+  grid-template-columns: auto;
 }
 
 .landing-container {
