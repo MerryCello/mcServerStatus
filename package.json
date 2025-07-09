@@ -1,11 +1,11 @@
 {
   "name": "mc-server-status",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "homepage": "https://merrycello.github.io/mcServerStatus",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npx update-browserslist-db@latest -y && react-scripts build",
     "test": "jest --watchAll=false",
     "coverage": "jest --coverage --silent",
     "eject": "react-scripts eject",
@@ -15,7 +15,8 @@
     "lint:fix": "npm run lint -- --fix",
     "pre-commit": "run-p test lint tsc",
     "pre-push": "run-p test lint tsc",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "prepare": "husky"
   },
   "dependencies": {
     "firebase": "~11.2.0",
@@ -93,11 +94,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run pre-commit",
-      "pre-push": "npm run pre-push"
-    }
   }
 }
