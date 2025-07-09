@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createBrowserRouter, RouterProvider, Navigate} from 'react-router-dom';
+import {createHashRouter, RouterProvider, Navigate} from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -8,7 +8,7 @@ import NotFound404 from './pages/NotFound404';
 import EditServerPage from './pages/EditServerPage';
 import DeleteServerPage from './pages/DeleteServerPage';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '*',
     element: <Navigate to='/mcServerStatus' replace />,
