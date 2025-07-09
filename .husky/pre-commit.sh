@@ -1,0 +1,1 @@
+npx run-p test lint tsc
