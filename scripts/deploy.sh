@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
   exit 1;
 fi
 
-npx run-p test lint tsc &&
+npm run pre-build &&
 npm run build &&
 npm version $1 &&
 git push --tags &&
