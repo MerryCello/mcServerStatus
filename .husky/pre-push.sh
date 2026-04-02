@@ -1,1 +1,1 @@
-npx run-p test lint tsc
+npx run-p coverage lint tsc
