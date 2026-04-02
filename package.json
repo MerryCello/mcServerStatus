@@ -1,6 +1,6 @@
 {
   "name": "mc-server-status",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "homepage": "https://merrycello.github.io/mcServerStatus",
   "private": true,
   "engines": {
