@@ -1,5 +1,6 @@
 import React, {
   FocusEventHandler,
+  KeyboardEventHandler,
   forwardRef,
   ForwardRefRenderFunction,
   useEffect,
@@ -71,6 +72,22 @@ const ServerCardFC: ForwardRefRenderFunction<any, ServerCardProps> = (
     onFocus?.(index);
   };
 
+  const cardOnKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (!event.shiftKey) {
+      return;
+    }
+
+    if (event.key === 'ArrowUp' && showUpArrow) {
+      event.preventDefault();
+      onUpClick?.(index);
+    }
+
+    if (event.key === 'ArrowDown' && showDownArrow) {
+      event.preventDefault();
+      onDownClick?.(index);
+    }
+  };
+
   const cardOnBlur: FocusEventHandler<HTMLDivElement> = (event) => {
     setIsSelected(false);
     onBlur?.(event);
@@ -86,6 +103,7 @@ const ServerCardFC: ForwardRefRenderFunction<any, ServerCardProps> = (
       onBlur={cardOnBlur}
       onClick={cardOnClick}
       onFocus={cardOnFocus}
+      onKeyDown={cardOnKeyDown}
       onMouseEnter={showArrows}
       onMouseLeave={hideArrows}
       tabIndex={tabIndex}>
@@ -146,8 +164,8 @@ const ServerCardFC: ForwardRefRenderFunction<any, ServerCardProps> = (
                     status?.players?.list
                       ? status.players.list.join('\n')
                       : status?.players?.online
-                      ? 'No players disclosed'
-                      : 'No players online'
+                        ? 'No players disclosed'
+                        : 'No players online'
                   }>
                   {`${playersOnline ?? '-'}/${maxPlayers ?? '-'}`}
                 </span>
@@ -181,8 +199,8 @@ const ServerCardFC: ForwardRefRenderFunction<any, ServerCardProps> = (
                     .join('<br/>') || '',
                 )
               : status?.loading
-              ? ''
-              : "Can't connect to server"}
+                ? ''
+                : "Can't connect to server"}
           </p>
         </div>
       </div>
@@ -201,8 +219,8 @@ const ServerCardFC: ForwardRefRenderFunction<any, ServerCardProps> = (
             {status?.players?.list
               ? status.players.list.join(', ')
               : status?.players?.online
-              ? 'No players disclosed'
-              : 'No players online'}
+                ? 'No players disclosed'
+                : 'No players online'}
           </p>
         </>
       )}

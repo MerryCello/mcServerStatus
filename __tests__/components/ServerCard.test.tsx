@@ -6,7 +6,7 @@ import {ServerCard} from '../../src/components/ServerCard';
 import {useWindowDimensions} from '../../src/hooks';
 
 jest.mock('../../src/hooks/useWindowDimensions');
-jest.mock('../../src/components/Signal', () => (props) => (
+jest.mock('../../src/components/Signal', () => (props: any) => (
   // @ts-expect-error
   <signal-icon {...props} server={JSON.stringify(props.server)} />
 ));

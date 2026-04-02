@@ -13,10 +13,6 @@ type LoadingProps = {
 
 export const Loading: FC<LoadingProps> = ({servers, setServers}) => {
   const [loadingStatesIndex, setLoadingStatesIndex] = useState(0);
-  useEffect(() => {
-    const interval = setLoadingInterval();
-    return () => clearInterval(interval);
-  }, []);
 
   const setLoadingInterval = () => {
     const interval = setInterval(() => {
@@ -38,6 +34,11 @@ export const Loading: FC<LoadingProps> = ({servers, setServers}) => {
     }, 300);
     return interval;
   };
+
+  useEffect(() => {
+    const interval = setLoadingInterval();
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div title="(Doesn't actually scan)">
